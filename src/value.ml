@@ -11,7 +11,9 @@ type value_type = Type_number
 
 let rec equal v1 v2 = match (v1, v2) with
   | (Number num1, Number num2) -> Float.equal num1 num2
+  | (Number _, _) -> false
   | (Function fun1, Function fun2) -> phys_equal fun1 fun2
+  | (Function _, _) -> false
   | (Vector vec1, Vector vec2) ->
     begin
       let module M = Core.List.Or_unequal_lengths in
@@ -19,7 +21,7 @@ let rec equal v1 v2 = match (v1, v2) with
       | M.Ok r -> r
       | M.Unequal_lengths -> false
     end
-  | _ -> false
+  | (Vector _, _) -> false
 
 let type_of = function
   | Number _ -> Type_number
