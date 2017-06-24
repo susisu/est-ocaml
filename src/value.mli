@@ -1,6 +1,8 @@
-type t = Number of float
-       | Function of (t -> t)
-       | Vector of t list
+open Core
+
+type t = VlNum of float
+       | VlFun of (t -> t)
+       | VlVec of t list
 
 type value_type = Type_number
                 | Type_function

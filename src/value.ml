@@ -1,8 +1,8 @@
 open Core
 
-type t = Number of float
-       | Function of (t -> t)
-       | Vector of t list
+type t = VlNum of float
+       | VlFun of (t -> t)
+       | VlVec of t list
 
 type value_type = Type_number
                 | Type_function
@@ -10,23 +10,23 @@ type value_type = Type_number
 
 
 let rec equal v1 v2 = match (v1, v2) with
-  | (Number num1, Number num2) -> Float.equal num1 num2
-  | (Number _, _) -> false
-  | (Function fun1, Function fun2) -> phys_equal fun1 fun2
-  | (Function _, _) -> false
-  | (Vector vec1, Vector vec2) ->
+  | (VlNum num1, VlNum num2) -> Float.equal num1 num2
+  | (VlNum _, _) -> false
+  | (VlFun fun1, VlFun fun2) -> phys_equal fun1 fun2
+  | (VlFun _, _) -> false
+  | (VlVec vec1, VlVec vec2) ->
     begin
-      let module M = Core.List.Or_unequal_lengths in
+      let module U = Core.List.Or_unequal_lengths in
       match List.for_all2 vec1 vec2 ~f:equal with
-      | M.Ok r -> r
-      | M.Unequal_lengths -> false
+      | U.Ok r -> r
+      | U.Unequal_lengths -> false
     end
-  | (Vector _, _) -> false
+  | (VlVec _, _) -> false
 
 let type_of = function
-  | Number _ -> Type_number
-  | Function _ -> Type_function
-  | Vector _ -> Type_vector
+  | VlNum _ -> Type_number
+  | VlFun _ -> Type_function
+  | VlVec _ -> Type_vector
 
 let string_of_value_type = function
   | Type_number -> "number"
