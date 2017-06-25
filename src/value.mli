@@ -4,10 +4,5 @@ type t = Num of float
        | Fun of (t -> t)
        | Vec of t list
 
-type value_type = Type_number
-                | Type_function
-                | Type_vector
-
 val equal : t -> t -> bool
-val type_of : t -> value_type
-val string_of_value_type : value_type -> string
+val type_string_of : t -> string

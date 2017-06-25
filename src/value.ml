@@ -4,10 +4,6 @@ type t = Num of float
        | Fun of (t -> t)
        | Vec of t list
 
-type value_type = Type_number
-                | Type_function
-                | Type_vector
-
 
 let rec equal v1 v2 = match (v1, v2) with
   | (Num num1, Num num2) -> Float.equal num1 num2
@@ -23,12 +19,7 @@ let rec equal v1 v2 = match (v1, v2) with
     end
   | (Vec _, _) -> false
 
-let type_of = function
-  | Num _ -> Type_number
-  | Fun _ -> Type_function
-  | Vec _ -> Type_vector
-
-let string_of_value_type = function
-  | Type_number -> "number"
-  | Type_function -> "function"
-  | Type_vector -> "vector"
+let type_string_of = function
+  | Num _ -> "number"
+  | Fun _ -> "function"
+  | Vec _ -> "vector"
