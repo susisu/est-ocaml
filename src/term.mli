@@ -7,3 +7,4 @@ type 'a t = Lit of 'a * Value.t
           | Let of 'a * string * 'a t * 'a t
 
 val equal : 'a t -> 'a t -> bool
+val get_info : 'a t -> 'a

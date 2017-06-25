@@ -26,3 +26,10 @@ let rec equal t1 t2 = match (t1, t2) with
   | (Let (_, name1, expr1, body1), Let (_, name2, expr2, body2)) ->
     String.equal name1 name2 && equal expr1 expr2 && equal body1 body2
   | (Let _, _) -> false
+
+let get_info = function
+  | Lit (info, _) -> info
+  | Var (info, _) -> info
+  | Vec (info, _) -> info
+  | App (info, _, _) -> info
+  | Let (info, _, _, _) -> info
