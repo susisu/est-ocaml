@@ -35,8 +35,8 @@ module Make_eval(Info : Stringable.S) = struct
             | Runtime_error msg -> raise_runtime_error info msg
           end
         | v -> raise_runtime_error (Term.get_info func) (
-              "  expected: function\n"
-            ^ "  actual  : " ^ Value.type_string_of v
+            "  expected: function\n" ^
+            "  actual  : " ^ Value.type_string_of v
           )
       end
     | Term.Let (_, name, expr, body) ->
