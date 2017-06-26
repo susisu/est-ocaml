@@ -25,10 +25,15 @@ module Make_eval(Info : Stringable.S) = struct
           )
       end
     | Term.Vec (_, elems) -> Value.Vec (List.map elems ~f:(eval ctx))
-    | Term.App (_, func, arg) ->
+    | Term.App (info, func, arg) ->
       begin
         match eval ctx func with
-        | Value.Fun f -> f (eval ctx arg)
+        | Value.Fun f ->
+          let a = eval ctx arg in
+          begin
+            try f a with
+            | Runtime_error msg -> raise_runtime_error info msg
+          end
         | v -> raise_runtime_error (Term.get_info func) (
               "  expected: function\n"
             ^ "  actual  : " ^ Value.type_string_of v
