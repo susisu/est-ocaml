@@ -24,7 +24,7 @@ module Make_eval(Info : Stringable.S) = struct
             "  unbound variable: " ^ name
           )
       end
-    | Term.Vec (_, elems) -> Value.Vec (List.map elems ~f:(eval ctx))
+    | Term.Vec (_, elems) -> Value.Vec (List.map elems ~f:(eval ctx) |> Array.of_list)
     | Term.App (info, func, arg) ->
       begin
         match eval ctx func with

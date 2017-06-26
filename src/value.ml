@@ -2,7 +2,7 @@ open Core
 
 type t = Num of float
        | Fun of (t -> t)
-       | Vec of t list
+       | Vec of t array
 
 
 let rec equal v1 v2 = match (v1, v2) with
@@ -12,10 +12,8 @@ let rec equal v1 v2 = match (v1, v2) with
   | (Fun _, _) -> false
   | (Vec vec1, Vec vec2) ->
     begin
-      let module U = Core.List.Or_unequal_lengths in
-      match List.for_all2 vec1 vec2 ~f:equal with
-      | U.Ok r -> r
-      | U.Unequal_lengths -> false
+      try Array.for_all2_exn vec1 vec2 ~f:equal with
+      | Invalid_argument _ -> false
     end
   | (Vec _, _) -> false
 
