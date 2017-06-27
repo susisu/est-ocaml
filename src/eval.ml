@@ -20,9 +20,7 @@ module Make_eval(Info : Stringable.S) = struct
       begin
         match Map.find ctx name with
         | Some v -> v
-        | None -> raise_runtime_error info (
-            "  unbound variable: " ^ name
-          )
+        | None -> raise_runtime_error info ("  unbound variable: " ^ name)
       end
     | Term.Vec (_, elems) -> Value.Vec (List.map elems ~f:(eval ctx) |> Array.of_list)
     | Term.App (info, func, arg) ->
