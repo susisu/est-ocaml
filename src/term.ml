@@ -20,8 +20,7 @@ let rec equal t1 t2 = match (t1, t2) with
       | U.Unequal_lengths -> false
     end
   | (Vec _, _) -> false
-  | (App (_, func1, arg1), App (_, func2, arg2)) ->
-    equal func1 func2 && equal arg1 arg2
+  | (App (_, func1, arg1), App (_, func2, arg2)) -> equal func1 func2 && equal arg1 arg2
   | (App _, _) -> false
   | (Let (_, name1, expr1, body1), Let (_, name2, expr2, body2)) ->
     String.equal name1 name2 && equal expr1 expr2 && equal body1 body2

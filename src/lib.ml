@@ -31,10 +31,11 @@ end
 
 
 (* unary operators *)
-let make_unary_op f = let open Value in
+let make_unary_op f =
+  let open Value in
   let rec op = function
     | Num num -> Num (f num)
-    | Vec vec -> Vec (Array.map vec ~f:(fun elem -> op elem))
+    | Vec vec -> Vec (Array.map vec ~f:op)
     | Fun _   -> raise_type_error ~expected:"number or vector" ~actual:"function"
   in
   Fun op
@@ -75,7 +76,8 @@ end
 
 
 (* binary operators *)
-let make_binary_op f = let open Value in
+let make_binary_op f =
+  let open Value in
   let rec op x y = match (x, y) with
     | (Num num1, Num num2) -> Num (f num1 num2)
     | (Num _, Vec vec) -> Vec (Array.map vec ~f:(fun elem -> op x elem))
@@ -232,7 +234,7 @@ let std = Eval.Context.of_alist [
     ("log_" , B.v_log_);
     ("atan2", B.v_atan2);
 
-    ("_!_"  , V.v_at);
+    ("_!_", V.v_at);
     ("len", V.v_len);
     ("fst", V.v_fst);
 
