@@ -1,47 +1,70 @@
+%{
+open Term
+%}
+
 %token <float> NUM
 %token <string> ID
-%token LEFT_BRACKET
-%token RIGHT_BRACKET
-%token COMMA
-%token LET
-%token EQUAL
-%token IN
-%token LEFT_PAREN
-%token RIGHT_PAREN
+%token LBRACKET RBRACKET COMMA
+%token PLUS MINUS
+%token TIMES FRAC MOD
+%token POWER CARET
+%token EXCL
+%token LET EQUAL IN
+%token LPAREN RPAREN
 %token EOF
+
+%left PLUS MINUS
+%left TIMES FRAC MOD
+%left POWER CARET
+%left EXCL
+%nonassoc UNARY
 
 %start <unit Term.t> toplevel
 
 %%
 
-number:
-  num = NUM { Term.Lit ((), Value.Num num) }
+num:
+  num = NUM { Lit ((), Value.Num num) }
 
-variable:
-  name = ID { Term.Var ((), name) }
+var:
+  name = ID { Var ((), name) }
 
-vector:
-  LEFT_BRACKET; elems = separated_list(COMMA, term); RIGHT_BRACKET { Term.Vec ((), elems) }
+vec:
+  LBRACKET; elems = separated_list(COMMA, term); RBRACKET { Vec ((), elems) }
 
 
 aterm:
-  | t = number                        { t }
-  | t = variable                      { t }
-  | t = vector                        { t }
-  | LEFT_PAREN; t = term; RIGHT_PAREN { t }
+  | t = num                  { t }
+  | t = var                  { t }
+  | t = vec                  { t }
+  | LPAREN; t = term; RPAREN { t }
 
-application:
-  | t = aterm                       { t }
-  | func = application; arg = aterm { Term.App ((), func, arg) }
+app:
+  | t = aterm               { t }
+  | func = app; arg = aterm { App ((), func, arg) }
 
 
-binding:
-  LET; name = ID; EQUAL; expr = term; IN; body = term { Term.Let ((), name, expr, body) }
+op:
+  | t = app                      { t }
+  | left = op; PLUS;  right = op { App ((), App ((), Var ((), "_+_"),  left), right) }
+  | left = op; MINUS; right = op { App ((), App ((), Var ((), "_-_"),  left), right) }
+  | left = op; TIMES; right = op { App ((), App ((), Var ((), "_*_"),  left), right) }
+  | left = op; FRAC;  right = op { App ((), App ((), Var ((), "_/_"),  left), right) }
+  | left = op; MOD;   right = op { App ((), App ((), Var ((), "_%_"),  left), right) }
+  | left = op; POWER; right = op { App ((), App ((), Var ((), "_**_"), left), right) }
+  | left = op; CARET; right = op { App ((), App ((), Var ((), "_^_"),  left), right) }
+  | left = op; EXCL;  right = op { App ((), App ((), Var ((), "_!_"),  left), right) }
+  | PLUS;  arg = op %prec UNARY  { App ((), Var ((), "+_"), arg) }
+  | MINUS; arg = op %prec UNARY  { App ((), Var ((), "-_"), arg) }
+
+
+bind:
+  LET; name = ID; EQUAL; expr = term; IN; body = term { Let ((), name, expr, body) }
 
 
 term:
-  | t = application { t }
-  | t = binding     { t }
+  | t = op   { t }
+  | t = bind { t }
 
 toplevel:
   t = term; EOF { t }
