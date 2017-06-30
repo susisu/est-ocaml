@@ -46,5 +46,5 @@ let rec to_string = function
       | Lit _ | Var _ | Vec _ -> to_string arg
       | App _ | Let _ -> "(" ^ to_string arg ^ ")"
     in
-    "(" ^ fstr ^ " " ^ astr ^ ")"
+    fstr ^ " " ^ astr
   | Let (_, name, expr, body) -> "let " ^ name ^ " = " ^ to_string expr ^ " in " ^ to_string body
