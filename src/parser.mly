@@ -16,8 +16,8 @@ open Term
 %left PLUS MINUS
 %left TIMES FRAC MOD
 %left POWER CARET
-%left EXCL
 %nonassoc UNARY
+%left EXCL
 
 %start <unit Term.t> toplevel
 
