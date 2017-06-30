@@ -9,6 +9,6 @@ module Context : sig
   val of_alist : (string * Value.t) list -> t
 end
 
-module Make_eval(Info : Stringable.S) : sig
+module Make_eval(Info : Common.Showable) : sig
   val eval : Context.t -> Info.t Term.t -> Value.t
 end

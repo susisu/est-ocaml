@@ -9,7 +9,7 @@ module Context = struct
   let of_alist = String.Map.of_alist_reduce ~f:(fun _ x -> x)
 end
 
-module Make_eval(Info : Stringable.S) = struct
+module Make_eval(Info : Common.Showable) = struct
   let raise_runtime_error info msg =
     let msg' = Info.to_string info ^ ":\n" ^ msg in
     raise (Runtime_error msg')
