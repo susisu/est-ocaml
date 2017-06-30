@@ -32,3 +32,19 @@ let get_info = function
   | Vec (info, _) -> info
   | App (info, _, _) -> info
   | Let (info, _, _, _) -> info
+
+let rec to_string = function
+  | Lit (_, v) -> Value.to_string v
+  | Var (_, name) -> name
+  | Vec (_, elems) -> "[" ^ String.concat ~sep:", " (List.map elems ~f:to_string) ^ "]"
+  | App (_, func, arg) ->
+    let fstr = match func with
+      | Lit _ | Var _ | Vec _ | App _ -> to_string func
+      | Let _ -> "(" ^ to_string func ^ ")"
+    in
+    let astr = match arg with
+      | Lit _ | Var _ | Vec _ -> to_string arg
+      | App _ | Let _ -> "(" ^ to_string arg ^ ")"
+    in
+    "(" ^ fstr ^ " " ^ astr ^ ")"
+  | Let (_, name, expr, body) -> "let " ^ name ^ " = " ^ to_string expr ^ " in " ^ to_string body

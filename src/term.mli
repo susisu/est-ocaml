@@ -8,3 +8,4 @@ type 'a t = Lit of 'a * Value.t
 
 val equal : 'a t -> 'a t -> bool
 val get_info : 'a t -> 'a
+val to_string : 'a t -> string

@@ -6,3 +6,4 @@ type t = Num of float
 
 val equal : t -> t -> bool
 val type_string_of : t -> string
+val to_string : t -> string

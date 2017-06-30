@@ -21,3 +21,8 @@ let type_string_of = function
   | Num _ -> "number"
   | Fun _ -> "function"
   | Vec _ -> "vector"
+
+let rec to_string = function
+  | Num num -> Float.to_string num
+  | Fun _ -> "<function>"
+  | Vec vec -> "[" ^ String.concat_array ~sep:", " (Array.map vec ~f:to_string) ^ "]"
