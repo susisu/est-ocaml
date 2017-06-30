@@ -5,27 +5,27 @@ open Lexing
 open Parser
 
 let reserved_ids = String.Map.of_alist_reduce ~f:(fun _ x -> x) [
-    ("let", fun () -> LET);
-    ("in",  fun () -> IN);
+    ("let", fun p -> LET p);
+    ("in",  fun p -> IN p);
   ]
 
 let reserved_ops = String.Map.of_alist_reduce ~f:(fun _ x -> x) [
-    ("+",  fun () -> PLUS);
-    ("-",  fun () -> MINUS);
-    ("*",  fun () -> TIMES);
-    ("/",  fun () -> FRAC);
-    ("%",  fun () -> MOD);
-    ("**", fun () -> POWER);
-    ("^",  fun () -> CARET);
-    ("!",  fun () -> EXCL);
-    ("=",  fun () -> EQUAL);
+    ("+",  fun p -> PLUS p);
+    ("-",  fun p -> MINUS p);
+    ("*",  fun p -> TIMES p);
+    ("/",  fun p -> FRAC p);
+    ("%",  fun p -> MOD p);
+    ("**", fun p -> POWER p);
+    ("^",  fun p -> CARET p);
+    ("!",  fun p -> EXCL p);
+    ("=",  fun p -> EQUAL p);
   ]
 
 exception Error of string
 }
 
-let white_space = [' ' '\r' '\t']
-let new_line    = '\n'
+let whitespace = [' ' '\r' '\t']
+let newline    = '\n'
 let digit       = ['0'-'9']
 let letter      = ['A'-'Z' 'a'-'z']
 let alphaNum    = letter | digit
@@ -39,25 +39,25 @@ let identifier = letter (alphaNum | ['_' ','])*
 let operator = ['+' '-' '*' '/' '%' '^' '!' '=']+
 
 rule main = parse
-  | white_space { main lexbuf }
-  | new_line    { Lexing.new_line lexbuf; main lexbuf }
-  | float       { NUM (Float.of_string (Lexing.lexeme lexbuf)) }
-  | identifier  {
-      let name = Lexing.lexeme lexbuf in
+  | whitespace { main lexbuf }
+  | newline    { new_line lexbuf; main lexbuf }
+  | float      { NUM (lexbuf.lex_start_p, Float.of_string (lexeme lexbuf)) }
+  | identifier {
+      let name = lexeme lexbuf in
       match Map.find reserved_ids name with
-      | Some f -> f ()
-      | None -> ID name
+      | Some f -> f (lexbuf.lex_start_p)
+      | None -> ID (lexbuf.lex_start_p, name)
     }
   | operator {
-      let name = Lexing.lexeme lexbuf in
+      let name = lexeme lexbuf in
       match Map.find reserved_ops name with
-      | Some f -> f ()
+      | Some f -> f (lexbuf.lex_start_p)
       | None -> raise (Error ("  unknown operator: " ^ name))
     }
-  | '[' { LBRACKET }
-  | ']' { RBRACKET }
-  | ',' { COMMA }
-  | '(' { LPAREN }
-  | ')' { RPAREN }
-  | _   { raise (Error ("  unexpected character: " ^ Lexing.lexeme lexbuf)) }
-  | eof { EOF }
+  | '[' { LBRACKET (lexbuf.lex_start_p) }
+  | ']' { RBRACKET (lexbuf.lex_start_p) }
+  | ',' { COMMA (lexbuf.lex_start_p) }
+  | '(' { LPAREN (lexbuf.lex_start_p) }
+  | ')' { RPAREN (lexbuf.lex_start_p) }
+  | _   { raise (Error ("  unexpected character: " ^ lexeme lexbuf)) }
+  | eof { EOF (lexbuf.lex_start_p) }

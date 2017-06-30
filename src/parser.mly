@@ -1,17 +1,19 @@
 %{
 open Term
+
+let pos = get_info
 %}
 
-%token <float> NUM
-%token <string> ID
-%token LBRACKET RBRACKET COMMA
-%token PLUS MINUS
-%token TIMES FRAC MOD
-%token POWER CARET
-%token EXCL
-%token LET EQUAL IN
-%token LPAREN RPAREN
-%token EOF
+%token <Lexing.position * float> NUM
+%token <Lexing.position * string> ID
+%token <Lexing.position> LBRACKET RBRACKET COMMA
+%token <Lexing.position> PLUS MINUS
+%token <Lexing.position> TIMES FRAC MOD
+%token <Lexing.position> POWER CARET
+%token <Lexing.position> EXCL
+%token <Lexing.position> LET EQUAL IN
+%token <Lexing.position> LPAREN RPAREN
+%token <Lexing.position> EOF
 
 %left PLUS MINUS
 %left TIMES FRAC MOD
@@ -19,18 +21,18 @@ open Term
 %nonassoc UNARY
 %left EXCL
 
-%start <unit Term.t> toplevel
+%start <Lexing.position Term.t> toplevel
 
 %%
 
 num:
-  num = NUM { Lit ((), Value.Num num) }
+  i = NUM { Lit (fst i, Value.Num (snd i)) }
 
 var:
-  name = ID { Var ((), name) }
+  i = ID { Var (fst i, snd i) }
 
 vec:
-  LBRACKET; elems = separated_list(COMMA, term); RBRACKET { Vec ((), elems) }
+  p = LBRACKET; elems = separated_list(COMMA, term); RBRACKET { Vec (p, elems) }
 
 
 aterm:
@@ -41,25 +43,25 @@ aterm:
 
 app:
   | t = aterm               { t }
-  | func = app; arg = aterm { App ((), func, arg) }
+  | func = app; arg = aterm { App (pos arg, func, arg) }
 
 
 op:
-  | t = app                      { t }
-  | left = op; PLUS;  right = op { App ((), App ((), Var ((), "_+_"),  left), right) }
-  | left = op; MINUS; right = op { App ((), App ((), Var ((), "_-_"),  left), right) }
-  | left = op; TIMES; right = op { App ((), App ((), Var ((), "_*_"),  left), right) }
-  | left = op; FRAC;  right = op { App ((), App ((), Var ((), "_/_"),  left), right) }
-  | left = op; MOD;   right = op { App ((), App ((), Var ((), "_%_"),  left), right) }
-  | left = op; POWER; right = op { App ((), App ((), Var ((), "_**_"), left), right) }
-  | left = op; CARET; right = op { App ((), App ((), Var ((), "_^_"),  left), right) }
-  | left = op; EXCL;  right = op { App ((), App ((), Var ((), "_!_"),  left), right) }
-  | PLUS;  arg = op %prec UNARY  { App ((), Var ((), "+_"), arg) }
-  | MINUS; arg = op %prec UNARY  { App ((), Var ((), "-_"), arg) }
+  | t = app                         { t }
+  | lhs = op; p = PLUS;  rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_+_"),  lhs), rhs) }
+  | lhs = op; p = MINUS; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_-_"),  lhs), rhs) }
+  | lhs = op; p = TIMES; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_*_"),  lhs), rhs) }
+  | lhs = op; p = FRAC;  rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_/_"),  lhs), rhs) }
+  | lhs = op; p = MOD;   rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_%_"),  lhs), rhs) }
+  | lhs = op; p = POWER; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_**_"), lhs), rhs) }
+  | lhs = op; p = CARET; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_^_"),  lhs), rhs) }
+  | lhs = op; p = EXCL;  rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_!_"),  lhs), rhs) }
+  | p = PLUS;  arg = op %prec UNARY { App (pos arg, Var (p, "+_"), arg) }
+  | p = MINUS; arg = op %prec UNARY { App (pos arg, Var (p, "-_"), arg) }
 
 
 bind:
-  LET; name = ID; EQUAL; expr = term; IN; body = term { Let ((), name, expr, body) }
+  p = LET; i = ID; EQUAL; expr = term; IN; body = term { Let (p, snd i, expr, body) }
 
 
 term:
