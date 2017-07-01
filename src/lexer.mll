@@ -22,6 +22,10 @@ let reserved_ops = String.Map.of_alist_reduce ~f:(fun _ x -> x) [
   ]
 
 exception Error of string
+
+let raise_error p msg =
+  let p_str = Common.Position.to_string p in
+  raise (Error (p_str ^ ":\n" ^ msg))
 }
 
 let whitespace = [' ' '\r' '\t']
@@ -52,12 +56,12 @@ rule main = parse
       let name = lexeme lexbuf in
       match Map.find reserved_ops name with
       | Some f -> f (lexbuf.lex_start_p)
-      | None -> raise (Error ("  unknown operator: " ^ name))
+      | None -> raise_error (lexbuf.lex_start_p) ("  unknown operator: " ^ name)
     }
   | '[' { LBRACKET (lexbuf.lex_start_p) }
   | ']' { RBRACKET (lexbuf.lex_start_p) }
   | ',' { COMMA (lexbuf.lex_start_p) }
   | '(' { LPAREN (lexbuf.lex_start_p) }
   | ')' { RPAREN (lexbuf.lex_start_p) }
-  | _   { raise (Error ("  unexpected character: " ^ lexeme lexbuf)) }
+  | _   { raise_error (lexbuf.lex_start_p) ("  unexpected character: " ^ lexeme lexbuf) }
   | eof { EOF (lexbuf.lex_start_p) }
