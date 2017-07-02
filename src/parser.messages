@@ -219,7 +219,7 @@ toplevel: LBRACKET NUM RPAREN
 ## In state 15, spurious reduction of production term -> op
 ##
 
-  expecting number, vector, identifier, '(', operator or ','
+  expecting number, vector, identifier, '(', operator, ',' or ']'
 
 toplevel: LET ID EQUAL NUM RPAREN
 ##

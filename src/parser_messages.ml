@@ -11,7 +11,7 @@ let message =
     | 40 ->
         "expecting number, vector, identifier, '(', operator or 'in'\n"
     | 12 ->
-        "expecting number, vector, identifier, '(', operator or ','\n"
+        "expecting number, vector, identifier, '(', operator, ',' or ']'\n"
     | 48 | 24 ->
         "expecting number, vector, identifier, '(' or operator\n"
     | 1 | 3 | 28 | 34 | 16 | 32 | 30 | 18 | 26 | 20 ->
