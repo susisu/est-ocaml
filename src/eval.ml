@@ -11,7 +11,7 @@ end
 
 module Make_eval(Info : Common.Showable) = struct
   let raise_runtime_error info msg =
-    let msg' = Info.to_string info ^ ":\n" ^ msg in
+    let msg' = sprintf "Runtime Error at %s:\n%s" (Info.to_string info) msg in
     raise (Runtime_error msg')
 
   let rec eval ctx = function
