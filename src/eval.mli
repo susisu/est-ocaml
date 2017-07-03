@@ -7,6 +7,7 @@ module Context : sig
 
   val empty : t
   val of_alist : (string * Value.t) list -> t
+  val append : t -> t -> t
 end
 
 module Make_eval(Info : Common.Showable) : sig

@@ -7,6 +7,12 @@ module Context = struct
 
   let empty = String.Map.empty
   let of_alist = String.Map.of_alist_reduce ~f:(fun _ x -> x)
+  let append = Map.merge ~f:(fun ~key:_ v ->
+      match v with
+      | `Both (_, x) -> Some x
+      | `Left x -> Some x
+      | `Right x -> Some x
+    )
 end
 
 module Make_eval(Info : Common.Showable) = struct
