@@ -36,10 +36,11 @@ vec:
 
 
 aterm:
-  | t = num                  { t }
-  | t = var                  { t }
-  | t = vec                  { t }
-  | LPAREN; t = term; RPAREN { t }
+  | t = num                            { t }
+  | t = var                            { t }
+  | t = vec                            { t }
+  | LPAREN; t = term; RPAREN           { t }
+  | lhs = aterm; p = EXCL; rhs = aterm { App (pos rhs, App (pos lhs, Var (p, "_!_"),  lhs), rhs) }
 
 app:
   | t = aterm               { t }
@@ -55,7 +56,6 @@ op:
   | lhs = op; p = MOD;   rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_%_"),  lhs), rhs) }
   | lhs = op; p = POWER; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_**_"), lhs), rhs) }
   | lhs = op; p = CARET; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_^_"),  lhs), rhs) }
-  | lhs = op; p = EXCL;  rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_!_"),  lhs), rhs) }
   | p = PLUS;  arg = op %prec UNARY { App (pos arg, Var (p, "+_"), arg) }
   | p = MINUS; arg = op %prec UNARY { App (pos arg, Var (p, "-_"), arg) }
 

@@ -12,9 +12,9 @@ let message =
         "expecting number, vector, identifier, '(', operator or 'in'\n"
     | 12 ->
         "expecting number, vector, identifier, '(', operator, ',' or ']'\n"
-    | 48 | 24 ->
+    | 48 | 21 ->
         "expecting number, vector, identifier, '(' or operator\n"
-    | 1 | 3 | 28 | 34 | 16 | 32 | 30 | 18 | 26 | 20 ->
+    | 1 | 3 | 28 | 34 | 16 | 32 | 30 | 18 | 26 | 22 ->
         "expecting number, vector, identifier or '('\n"
     | 6 ->
         "expecting '='\n"
