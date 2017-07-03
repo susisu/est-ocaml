@@ -10,7 +10,7 @@ type 'a t = Lit of 'a * Value.t
 let rec equal t1 t2 = match (t1, t2) with
   | (Lit (_, v1), Lit (_, v2)) -> Value.equal v1 v2
   | (Lit _, _) -> false
-  | (Var (_, name1), Var (_, name2)) -> String.equal name1 name2
+  | (Var (_, name1), Var (_, name2)) -> name1 = name2
   | (Var _, _) -> false
   | (Vec (_, elems1), Vec (_, elems2)) ->
     begin
@@ -23,7 +23,7 @@ let rec equal t1 t2 = match (t1, t2) with
   | (App (_, func1, arg1), App (_, func2, arg2)) -> equal func1 func2 && equal arg1 arg2
   | (App _, _) -> false
   | (Let (_, name1, expr1, body1), Let (_, name2, expr2, body2)) ->
-    String.equal name1 name2 && equal expr1 expr2 && equal body1 body2
+    name1 = name2 && equal expr1 expr2 && equal body1 body2
   | (Let _, _) -> false
 
 let get_info = function
@@ -36,15 +36,17 @@ let get_info = function
 let rec to_string = function
   | Lit (_, v) -> Value.to_string v
   | Var (_, name) -> name
-  | Vec (_, elems) -> "[" ^ String.concat ~sep:", " (List.map elems ~f:to_string) ^ "]"
+  | Vec (_, elems) ->
+    let elems_str = String.concat ~sep:", " (List.map elems ~f:to_string) in
+    "[" ^ elems_str ^ "]"
   | App (_, func, arg) ->
-    let fstr = match func with
+    let func_str = match func with
       | Lit _ | Var _ | Vec _ | App _ -> to_string func
       | Let _ -> "(" ^ to_string func ^ ")"
     in
-    let astr = match arg with
+    let arg_str = match arg with
       | Lit _ | Var _ | Vec _ -> to_string arg
       | App _ | Let _ -> "(" ^ to_string arg ^ ")"
     in
-    fstr ^ " " ^ astr
-  | Let (_, name, expr, body) -> "let " ^ name ^ " = " ^ to_string expr ^ " in " ^ to_string body
+    func_str ^ " " ^ arg_str
+  | Let (_, name, expr, body) -> sprintf "let %s = %s in %s" name (to_string expr) (to_string body)

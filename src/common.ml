@@ -16,7 +16,7 @@ module Position = struct
     let lnum = p.pos_lnum in
     let cnum = p.pos_cnum - p.pos_bol + 1 in
     let fname_prefix =
-      if String.is_empty fname then ""
+      if fname = "" then ""
       else "\"" ^ fname ^ "\""
     in
     sprintf "%s(line %d, column %d)" fname_prefix lnum cnum
