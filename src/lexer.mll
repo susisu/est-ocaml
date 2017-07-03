@@ -38,7 +38,7 @@ let fraction = '.' digit*
 let exponent = ['E' 'e'] ['+' '-']? digit+
 let float    = digit+ fraction? exponent?
 
-let identifier = letter (alpha_num | ['_' ','])*
+let identifier = letter (alpha_num | ['_' '\''])*
 
 let operator = ['+' '-' '*' '/' '%' '^' '!' '=']+
 
