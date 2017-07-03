@@ -4,7 +4,7 @@ let spec =
   let open Command.Spec in
   empty
   +> anon ("program" %: string)
-  +> anon ("file" %: file)
+  +> anon (sequence ("files" %: file))
 
 let die msg =
   Out_channel.output_string Out_channel.stderr (msg ^ "\n");
@@ -36,23 +36,26 @@ let parse_program prog =
   try loop_handle succeed fail suppiler checkpoint with
   | Lexer.Error msg -> die msg
 
-let read_data file =
+let read_data id file =
   let open Reader in
   let module R = Make_reader(Table_extended) in
-  In_channel.with_file file ~f:(fun ch ->
-      R.read_from_channel { id = 0; transpose = false } ch
-    )
+  let opts = { id; transpose = false } in
+  match file with
+  | "-" -> R.read_from_channel opts In_channel.stdin
+  | _ ->
+    try In_channel.with_file file ~f:(R.read_from_channel opts) with
+    | Sys_error msg -> die msg
 
 let eval_term ctx term =
   let module E = Eval.Make_eval(Common.Position) in
   try E.eval ctx term with
   | Eval.Runtime_error msg -> die msg
 
-let main prog file () =
+let main prog files () =
   let term = parse_program prog in
-  let ctx = read_data file in
-  let ctx' = Eval.Context.append Lib.std ctx in
-  let v = eval_term ctx' term in
+  let ctxs = List.mapi files ~f:read_data in
+  let ctx = List.fold_left ctxs ~init:Lib.std ~f:Eval.Context.append in
+  let v = eval_term ctx term in
   Value.to_string v |> print_endline
 
 let command = Command.basic spec main
