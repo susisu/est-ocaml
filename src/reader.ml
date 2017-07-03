@@ -46,11 +46,11 @@ let create_ctx_alist id table =
                    |> List.mapi ~f:(fun i v -> ("$" ^ Int.to_string i, v))
     else []
   in
-  let ctx_alist =
+  let ctx_alist' =
     if id = 0 then ("$$", table_v) :: ("$$0", table_v) :: ctx_alist
     else ("$$" ^ Int.to_string id, table_v) :: ctx_alist
   in
-  ctx_alist
+  ctx_alist'
 
 
 type table_options = {
