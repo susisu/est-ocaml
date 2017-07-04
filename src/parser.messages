@@ -1,208 +1,227 @@
-toplevel: TIMES 
+toplevel: TIMES
 ##
 ## Ends in an error in state: 0.
 ##
 ## toplevel' -> . toplevel [ # ]
 ##
 ## The known suffix of the stack is as follows:
-## 
 ##
-toplevel: LPAREN TIMES 
+##
+toplevel: LPAREN TIMES
 ##
 ## Ends in an error in state: 4.
 ##
-## aterm -> LPAREN . term RPAREN [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET ]
+## aterm -> LPAREN . term RPAREN [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## LPAREN 
+## LPAREN
 ##
-toplevel: LBRACKET TIMES 
+toplevel: LBRACKET TIMES
 ##
 ## Ends in an error in state: 8.
 ##
-## vec -> LBRACKET . loption(separated_nonempty_list(COMMA,term)) RBRACKET [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET ]
+## vec -> LBRACKET . loption(separated_nonempty_list(COMMA,term)) RBRACKET [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## LBRACKET 
+## LBRACKET
 ##
-toplevel: LBRACKET NUM COMMA TIMES 
+toplevel: LBRACKET NUM COMMA TIMES
 ##
 ## Ends in an error in state: 13.
 ##
 ## separated_nonempty_list(COMMA,term) -> term COMMA . separated_nonempty_list(COMMA,term) [ RBRACKET ]
 ##
 ## The known suffix of the stack is as follows:
-## term COMMA 
+## term COMMA
 ##
-toplevel: LET ID EQUAL TIMES 
+toplevel: LET ID EQUAL TIMES
 ##
 ## Ends in an error in state: 7.
 ##
 ## bind -> LET ID EQUAL . term IN term [ RPAREN RBRACKET IN EOF COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID EQUAL 
+## LET ID EQUAL
 ##
-toplevel: LET ID EQUAL NUM IN TIMES 
+toplevel: LET ID EQUAL NUM IN TIMES
 ##
-## Ends in an error in state: 41.
+## Ends in an error in state: 43.
 ##
 ## bind -> LET ID EQUAL term IN . term [ RPAREN RBRACKET IN EOF COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID EQUAL term IN 
+## LET ID EQUAL term IN
 ##
 
   expecting term
 
-toplevel: LET TIMES 
+toplevel: LET TIMES
 ##
 ## Ends in an error in state: 5.
 ##
 ## bind -> LET . ID EQUAL term IN term [ RPAREN RBRACKET IN EOF COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## LET 
+## LET
 ##
 
   expecting identifier
 
-toplevel: LET ID TIMES 
+toplevel: LET ID TIMES
 ##
 ## Ends in an error in state: 6.
 ##
 ## bind -> LET ID . EQUAL term IN term [ RPAREN RBRACKET IN EOF COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID 
+## LET ID
 ##
 
   expecting '='
 
-toplevel: PLUS TIMES 
+toplevel: PLUS TIMES
 ##
 ## Ends in an error in state: 1.
 ##
-## op -> PLUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
+## op -> PLUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## PLUS 
+## PLUS
 ##
-toplevel: MINUS TIMES 
+toplevel: MINUS TIMES
 ##
 ## Ends in an error in state: 3.
 ##
-## op -> MINUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
+## op -> MINUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## MINUS 
+## MINUS
 ##
-toplevel: NUM PLUS TIMES 
-##
-## Ends in an error in state: 28.
-##
-## op -> op PLUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
-##
-## The known suffix of the stack is as follows:
-## op PLUS 
-##
-toplevel: NUM MINUS TIMES 
-##
-## Ends in an error in state: 34.
-##
-## op -> op MINUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
-##
-## The known suffix of the stack is as follows:
-## op MINUS 
-##
-toplevel: NUM TIMES TIMES 
-##
-## Ends in an error in state: 16.
-##
-## op -> op TIMES . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
-##
-## The known suffix of the stack is as follows:
-## op TIMES 
-##
-toplevel: NUM FRAC TIMES 
-##
-## Ends in an error in state: 32.
-##
-## op -> op FRAC . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
-##
-## The known suffix of the stack is as follows:
-## op FRAC 
-##
-toplevel: NUM MOD TIMES 
+toplevel: NUM PLUS TIMES
 ##
 ## Ends in an error in state: 30.
 ##
-## op -> op MOD . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
+## op -> op PLUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## op MOD 
+## op PLUS
 ##
-toplevel: NUM POWER TIMES 
+toplevel: NUM MINUS TIMES
+##
+## Ends in an error in state: 36.
+##
+## op -> op MINUS . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## op MINUS
+##
+toplevel: NUM TIMES TIMES
+##
+## Ends in an error in state: 16.
+##
+## op -> op TIMES . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## op TIMES
+##
+toplevel: NUM FRAC TIMES
+##
+## Ends in an error in state: 34.
+##
+## op -> op FRAC . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## op FRAC
+##
+toplevel: NUM MOD TIMES
+##
+## Ends in an error in state: 32.
+##
+## op -> op MOD . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## op MOD
+##
+toplevel: NUM POWER TIMES
 ##
 ## Ends in an error in state: 18.
 ##
-## op -> op POWER . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
+## op -> op POWER . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## op POWER 
+## op POWER
 ##
-toplevel: NUM CARET TIMES 
+toplevel: NUM CARET TIMES
 ##
-## Ends in an error in state: 26.
+## Ends in an error in state: 28.
 ##
-## op -> op CARET . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET ]
-##
-## The known suffix of the stack is as follows:
-## op CARET 
-##
-toplevel: NUM EXCL TIMES 
-##
-## Ends in an error in state: 22.
-##
-## aterm -> aterm EXCL . aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET ]
+## op -> op CARET . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## aterm EXCL 
+## op CARET
+##
+toplevel: NUM APPEND TIMES
+##
+## Ends in an error in state: 20.
+##
+## op -> op APPEND . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## op APPEND
+##
+toplevel: NUM EXCL TIMES
+##
+## Ends in an error in state: 24.
+##
+## aterm -> aterm EXCL . aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## aterm EXCL
 ##
 
   expecting number, vector, identifier or '('
 
-toplevel: NUM RPAREN 
+toplevel: NUM RPAREN
 ##
-## Ends in an error in state: 48.
+## Ends in an error in state: 50.
 ##
 ## toplevel -> term . EOF [ # ]
 ##
 ## The known suffix of the stack is as follows:
-## term 
+## term
 ##
 ## WARNING: This example involves spurious reductions.
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 21, spurious reduction of production app -> aterm 
-## In state 24, spurious reduction of production op -> app 
-## In state 15, spurious reduction of production term -> op 
+## In state 23, spurious reduction of production app -> aterm
+## In state 26, spurious reduction of production op -> app
+## In state 15, spurious reduction of production term -> op
 ##
-toplevel: NUM LET 
+toplevel: NUM LET
 ##
-## Ends in an error in state: 21.
+## Ends in an error in state: 23.
 ##
-## app -> aterm . [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EOF COMMA CARET ]
-## aterm -> aterm . EXCL aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET ]
+## app -> aterm . [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EOF COMMA CARET APPEND ]
+## aterm -> aterm . EXCL aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## aterm 
+## aterm
+##
+toplevel: NUM NUM LET
+##
+## Ends in an error in state: 27.
+##
+## app -> app aterm . [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EOF COMMA CARET APPEND ]
+## aterm -> aterm . EXCL aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## app aterm
 ##
 
   expecting number, vector, identifier, '(' or operator
 
-toplevel: LBRACKET NUM RPAREN 
+toplevel: LBRACKET NUM RPAREN
 ##
 ## Ends in an error in state: 12.
 ##
@@ -210,55 +229,55 @@ toplevel: LBRACKET NUM RPAREN
 ## separated_nonempty_list(COMMA,term) -> term . COMMA separated_nonempty_list(COMMA,term) [ RBRACKET ]
 ##
 ## The known suffix of the stack is as follows:
-## term 
+## term
 ##
 ## WARNING: This example involves spurious reductions.
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 21, spurious reduction of production app -> aterm 
-## In state 24, spurious reduction of production op -> app 
-## In state 15, spurious reduction of production term -> op 
+## In state 23, spurious reduction of production app -> aterm
+## In state 26, spurious reduction of production op -> app
+## In state 15, spurious reduction of production term -> op
 ##
 
   expecting number, vector, identifier, '(', operator, ',' or ']'
 
-toplevel: LET ID EQUAL NUM RPAREN 
+toplevel: LET ID EQUAL NUM RPAREN
 ##
-## Ends in an error in state: 40.
+## Ends in an error in state: 42.
 ##
 ## bind -> LET ID EQUAL term . IN term [ RPAREN RBRACKET IN EOF COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## LET ID EQUAL term 
+## LET ID EQUAL term
 ##
 ## WARNING: This example involves spurious reductions.
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 21, spurious reduction of production app -> aterm 
-## In state 24, spurious reduction of production op -> app 
-## In state 15, spurious reduction of production term -> op 
+## In state 23, spurious reduction of production app -> aterm
+## In state 26, spurious reduction of production op -> app
+## In state 15, spurious reduction of production term -> op
 ##
 
   expecting number, vector, identifier, '(', operator or 'in'
 
-toplevel: LPAREN NUM RBRACKET 
+toplevel: LPAREN NUM RBRACKET
 ##
-## Ends in an error in state: 43.
+## Ends in an error in state: 45.
 ##
-## aterm -> LPAREN term . RPAREN [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET ]
+## aterm -> LPAREN term . RPAREN [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
 ##
 ## The known suffix of the stack is as follows:
-## LPAREN term 
+## LPAREN term
 ##
 ## WARNING: This example involves spurious reductions.
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 21, spurious reduction of production app -> aterm 
-## In state 24, spurious reduction of production op -> app 
-## In state 15, spurious reduction of production term -> op 
+## In state 23, spurious reduction of production app -> aterm
+## In state 26, spurious reduction of production op -> app
+## In state 15, spurious reduction of production term -> op
 ##
 
   expecting number, vector, identifier, '(', operator or ')'

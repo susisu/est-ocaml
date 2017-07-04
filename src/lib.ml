@@ -134,6 +134,14 @@ module V = struct
         else Array.get vec 0
       | v -> raise_type_error ~expected:"vector" ~actual:(type_string_of v)
     )
+
+  let v_append = Fun (function
+      | Vec vec1 -> Fun (function
+          | Vec vec2 -> Vec (Array.append vec1 vec2)
+          | v -> raise_type_error ~expected:"vector" ~actual:(type_string_of v)
+        )
+      | v -> raise_type_error ~expected:"number" ~actual:(type_string_of v)
+    )
 end
 
 
@@ -237,6 +245,7 @@ let std = Eval.Context.of_alist [
     ("_!_", V.v_at);
     ("len", V.v_len);
     ("fst", V.v_fst);
+    ("_@_", V.v_append);
 
     ("sum"   , A.v_sum);
     ("prod"  , A.v_prod);

@@ -10,7 +10,7 @@ let pos = get_info
 %token <Lexing.position> PLUS MINUS
 %token <Lexing.position> TIMES FRAC MOD
 %token <Lexing.position> POWER CARET
-%token <Lexing.position> EXCL
+%token <Lexing.position> APPEND EXCL
 %token <Lexing.position> LET EQUAL IN
 %token <Lexing.position> LPAREN RPAREN
 %token <Lexing.position> EOF
@@ -18,6 +18,7 @@ let pos = get_info
 %left PLUS MINUS
 %left TIMES FRAC MOD
 %left POWER CARET
+%left APPEND
 %nonassoc UNARY
 %left EXCL
 
@@ -56,6 +57,7 @@ op:
   | lhs = op; p = MOD;   rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_%_"),  lhs), rhs) }
   | lhs = op; p = POWER; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_**_"), lhs), rhs) }
   | lhs = op; p = CARET; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_^_"),  lhs), rhs) }
+  | lhs = op; p = APPEND; rhs = op  { App (pos rhs, App (pos lhs, Var (p, "_@_"),  lhs), rhs) }
   | p = PLUS;  arg = op %prec UNARY { App (pos arg, Var (p, "+_"), arg) }
   | p = MINUS; arg = op %prec UNARY { App (pos arg, Var (p, "-_"), arg) }
 
