@@ -1,20 +1,5 @@
 open Core
 
-let spec =
-  let open Command.Spec in
-  empty
-  +> flag "-reader" (optional_with_default "table" string)
-    ~doc:"NAME specify reader (default: table)"
-  +> flag "-reader-options" (optional string)
-    ~doc:"SEXP specify reader options as an S-expression"
-  +> flag "-printer" (optional_with_default "table" string)
-    ~doc:"NAME specify printer (default: table)"
-  +> flag "-printer-options" (optional string)
-    ~doc:"SEXP specify printer options as an S-expression"
-  +> anon ("program" %: string)
-  +> anon (sequence ("files" %: file))
-
-
 let die msg =
   Out_channel.output_string Out_channel.stderr (msg ^ "\n");
   exit 1
@@ -64,6 +49,7 @@ let print_value print_to_channel value =
   try print_to_channel Out_channel.stdout value with
   | Printer.Ill_formed_output msg -> die ("Ill-formed output: " ^ msg)
 
+
 let readers =
   let open Reader in
   String.Map.of_alist_reduce ~f:(fun _ x -> x) [
@@ -81,7 +67,10 @@ let create_read_from_channel name opts =
         | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("Ill-formed reader option: " ^ s)
     in
     R.read_from_channel opts'
-  | None -> die ("Unknown reader name: " ^ name)
+  | None -> die (
+      "unknown reader name: " ^ name ^ "\n" ^
+      "see -list-readers for the available reader names"
+    )
 
 let printers =
   let open Printer in
@@ -99,7 +88,16 @@ let create_print_to_channel name opts =
         | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("Ill-formed printer option: " ^ s)
     in
     P.print_to_channel opts'
-  | None -> die ("Unknown printer name: " ^ name)
+  | None -> die (
+      "unknown printer name: " ^ name ^ "\n" ^
+      "see -list-printers for the available printer names"
+    )
+
+let print_list list = List.iter list ~f:(fun item -> print_endline ("  " ^ item))
+
+let list_readers () = Map.keys readers |> print_list
+
+let list_printers () = Map.keys printers |> print_list
 
 let main r_name r_opts p_name p_opts prog files () =
   let read_from_channel = create_read_from_channel r_name r_opts in
@@ -109,6 +107,27 @@ let main r_name r_opts p_name p_opts prog files () =
   parse_program prog
   |> eval_term ctx
   |> print_value print_to_channel
+
+
+let spec =
+  let open Command.Spec in
+  step (fun m () () r_name r_opts p_name p_opts prog files ->
+      m r_name r_opts p_name p_opts prog files
+    )
+  +> flag "-list-readers" (no_arg_abort ~exit:(fun () -> list_readers (); exit 0))
+    ~doc:"print list of the available readers"
+  +> flag "-list-printers" (no_arg_abort ~exit:(fun () -> list_printers (); exit 0))
+    ~doc:"print list of the available printers"
+  +> flag "-reader" (optional_with_default "table" string)
+    ~doc:"NAME specify reader (default: table)"
+  +> flag "-reader-options" (optional string)
+    ~doc:"SEXP specify reader options"
+  +> flag "-printer" (optional_with_default "table" string)
+    ~doc:"NAME specify printer (default: table)"
+  +> flag "-printer-options" (optional string)
+    ~doc:"SEXP specify printer options"
+  +> anon ("program" %: string)
+  +> anon (sequence ("files" %: file))
 
 let command = Command.basic spec main
     ~summary:"Simple calculator"
