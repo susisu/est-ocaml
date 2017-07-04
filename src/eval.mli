@@ -4,7 +4,6 @@ exception Runtime_error of string
 
 module Context : sig
   type t
-
   val empty : t
   val of_alist : (string * Value.t) list -> t
   val append : t -> t -> t
