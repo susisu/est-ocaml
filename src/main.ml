@@ -7,6 +7,10 @@ let spec =
     ~doc:"NAME specify reader (default: table)"
   +> flag "-reader-options" (optional string)
     ~doc:"SEXP specify reader options as an S-expression"
+  +> flag "-printer" (optional_with_default "table" string)
+    ~doc:"NAME specify printer (default: table)"
+  +> flag "-printer-options" (optional string)
+    ~doc:"SEXP specify printer options as an S-expression"
   +> anon ("program" %: string)
   +> anon (sequence ("files" %: file))
 
@@ -56,6 +60,10 @@ let eval_term ctx term =
   | Eval.Runtime_error msg -> die msg
 
 
+let print_value print_to_channel value =
+  try print_to_channel Out_channel.stdout value with
+  | Printer.Ill_formed_output msg -> die ("Ill-formed output: " ^ msg)
+
 let readers =
   let open Reader in
   String.Map.of_alist_reduce ~f:(fun _ x -> x) [
@@ -75,13 +83,32 @@ let create_read_from_channel name opts =
     R.read_from_channel opts'
   | None -> die ("Unknown reader name: " ^ name)
 
-let main reader_name reader_opts prog files () =
-  let read_from_channel = create_read_from_channel reader_name reader_opts in
-  let term = parse_program prog in
-  let ctxs = List.mapi files ~f:(read_data read_from_channel) in
-  let ctx = List.fold_left ctxs ~init:Lib.std ~f:Eval.Context.append in
-  let v = eval_term ctx term in
-  Value.to_string v |> print_endline
+let printers =
+  let open Printer in
+  String.Map.of_alist_reduce ~f:(fun _ x -> x) [
+    ("table", (module Table : Printer));
+  ]
+
+let create_print_to_channel name opts =
+  match Map.find printers name with
+  | Some printer ->
+    let module P = (val printer) in
+    let opts' = match opts with
+      | None -> P.default_options
+      | Some s -> try Sexp.of_string s |> P.options_of_sexp with
+        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("Ill-formed printer option: " ^ s)
+    in
+    P.print_to_channel opts'
+  | None -> die ("Unknown printer name: " ^ name)
+
+let main r_name r_opts p_name p_opts prog files () =
+  let read_from_channel = create_read_from_channel r_name r_opts in
+  let print_to_channel = create_print_to_channel p_name p_opts in
+  let ctx = List.mapi files ~f:(read_data read_from_channel)
+            |> List.fold_left ~init:Lib.std ~f:Eval.Context.append in
+  parse_program prog
+  |> eval_term ctx
+  |> print_value print_to_channel
 
 let command = Command.basic spec main
     ~summary:"Simple calculator"
