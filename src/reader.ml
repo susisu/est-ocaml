@@ -1,22 +1,12 @@
 open Core
 
-module type Base = sig
+module type Reader = sig
   type options
-
-  val read : options -> string -> Eval.Context.t
+  val default_options : options
+  val options_of_sexp : Sexplib.Sexp.t -> options
+  val read_from_channel : options -> int -> In_channel.t -> Eval.Context.t
 end
 
-module Make_reader(B : Base) = struct
-  type options = B.options
-
-  let read = B.read
-
-  let read_from_channel opts ch = In_channel.input_all ch |> read opts
-end
-
-
-let split_lines str = String.split_lines str
-                      |> List.filter ~f:(fun line -> line <> "")
 
 let split_words str = String.split_on_chars ~on:[' '; '\t'] str
                       |> List.filter ~f:(fun word -> word <> "")
@@ -53,32 +43,39 @@ let create_ctx_alist id table =
   ctx_alist'
 
 
-type table_options = {
-  id: int;
-  transpose: bool;
-}
+module Table_options = struct
+  type t = {
+    transpose: bool [@default false];
+  } [@@deriving sexp]
+end
+
 
 module Table = struct
-  type options = table_options
+  type options = Table_options.t
+  let default_options = { Table_options.transpose = false }
+  let options_of_sexp = Table_options.t_of_sexp
 
   let remove_comments lines =
     List.filter lines ~f:(fun line -> String.prefix line 1 <> "#")
 
-  let read opts src =
-    let transpose = if opts.transpose then Fn.id else Array.transpose_exn in
-    let table = split_lines src
+  let read_from_channel opts id ch =
+    let transpose = if opts.Table_options.transpose then Fn.id else Array.transpose_exn in
+    let table = In_channel.input_lines ch
+                |> List.filter ~f:(fun line -> line <> "")
                 |> remove_comments
                 |> create_table
                 |> transpose
                 |> Array.map ~f:(fun row -> Value.Vec row)
     in
-    let ctx_alist = create_ctx_alist opts.id table in
+    let ctx_alist = create_ctx_alist id table in
     Eval.Context.of_alist ctx_alist
 end
 
 
 module Table_extended = struct
-  type options = table_options
+  type options = Table_options.t
+  let default_options = { Table_options.transpose = false }
+  let options_of_sexp = Table_options.t_of_sexp
 
   let valid_name_re = Re2.Regex.create_exn "^[A-Za-z\\$][A-Za-z0-9\\$_']*$"
   let validate_name name = Re2.Regex.matches valid_name_re name
@@ -97,15 +94,16 @@ module Table_extended = struct
         end
       )
 
-  let read opts src =
-    let transpose = if opts.transpose then Fn.id else Array.transpose_exn in
+  let read_from_channel opts id ch =
+    let transpose = if opts.Table_options.transpose then Fn.id else Array.transpose_exn in
     let consts = Hashtbl.create ~hashable:String.hashable () in
-    let table = split_lines src
+    let table = In_channel.input_lines ch
+                |> List.filter ~f:(fun line -> line <> "")
                 |> read_and_remove_comments consts
                 |> create_table
                 |> transpose
                 |> Array.map ~f:(fun row -> Value.Vec row)
     in
-    let ctx_alist = create_ctx_alist opts.id table @ Hashtbl.to_alist consts in
+    let ctx_alist = create_ctx_alist id table @ Hashtbl.to_alist consts in
     Eval.Context.of_alist ctx_alist
 end

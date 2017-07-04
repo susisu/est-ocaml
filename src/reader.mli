@@ -1,30 +1,25 @@
 open Core
 
-module type Base = sig
+module type Reader = sig
   type options
-
-  val read : options -> string -> Eval.Context.t
-end
-
-module Make_reader(B : Base) : sig
-  type options = B.options
-
-  val read : options -> string -> Eval.Context.t
-  val read_from_channel : options -> In_channel.t -> Eval.Context.t
+  val default_options : options
+  val options_of_sexp : Sexplib.Sexp.t -> options
+  val read_from_channel : options -> int -> In_channel.t -> Eval.Context.t
 end
 
 
-type table_options = {
-  id: int;
-  transpose: bool;
-}
+module Table_options : sig
+  type t = {
+    transpose: bool;
+  } [@@deriving sexp]
+end
 
 module Table : sig
-  type options = table_options
-  include Base with type options := table_options
+  type options = Table_options.t
+  include Reader with type options := Table_options.t
 end
 
 module Table_extended : sig
-  type options = table_options
-  include Base with type options := table_options
+  type options = Table_options.t
+  include Reader with type options := Table_options.t
 end
