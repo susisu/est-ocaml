@@ -25,7 +25,7 @@ let reserved_ops = String.Map.of_alist_reduce ~f:(fun _ x -> x) [
 exception Error of string
 
 let raise_error p msg =
-  let msg' = sprintf "Parse Error at %s:\n  %s" (Common.Position.to_string p) msg in
+  let msg' = sprintf "parse error at %s:\n  %s" (Common.Position.to_string p) msg in
   raise (Error msg')
 }
 

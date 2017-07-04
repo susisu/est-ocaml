@@ -20,11 +20,11 @@ let parse_program prog =
         | Not_found -> ""
       in
       let msg' =
-        if msg = "" then sprintf "Parse Error at %s" p_str
-        else sprintf "Parse Error at %s:\n  %s" p_str msg
+        if msg = "" then sprintf "parse error at %s" p_str
+        else sprintf "parse error at %s:\n  %s" p_str msg
       in
       die msg'
-    | _ -> die "Parse Error"
+    | _ -> die "parse error"
   in
   let suppiler = lexer_lexbuf_to_supplier Lexer.main lexbuf in
   let checkpoint = Parser.Incremental.toplevel lexbuf.Lexing.lex_curr_p in
@@ -47,7 +47,7 @@ let eval_term ctx term =
 
 let print_value print_to_channel value =
   try print_to_channel Out_channel.stdout value with
-  | Printer.Ill_formed_output msg -> die ("Ill-formed output: " ^ msg)
+  | Printer.Ill_formed_output msg -> die ("ill-formed output: " ^ msg)
 
 
 let readers =
@@ -64,7 +64,7 @@ let create_read_from_channel name opts =
     let opts' = match opts with
       | None -> R.default_options
       | Some s -> try Sexp.of_string s |> R.options_of_sexp with
-        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("Ill-formed reader option: " ^ s)
+        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("ill-formed reader option: " ^ s)
     in
     R.read_from_channel opts'
   | None -> die (
@@ -85,7 +85,7 @@ let create_print_to_channel name opts =
     let opts' = match opts with
       | None -> P.default_options
       | Some s -> try Sexp.of_string s |> P.options_of_sexp with
-        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("Ill-formed printer option: " ^ s)
+        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("ill-formed printer option: " ^ s)
     in
     P.print_to_channel opts'
   | None -> die (
