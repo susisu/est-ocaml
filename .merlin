@@ -3,3 +3,4 @@ B _build/src
 PKG core
 PKG menhirlib
 PKG re2
+FLG -ppx 'ppx-jane -as-ppx'
