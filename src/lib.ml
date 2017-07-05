@@ -1,8 +1,8 @@
 open Core
 
 let raise_runtime_error msg = raise (Eval.Runtime_error msg)
-let raise_type_error ~expected ~actual = raise_runtime_error (
-    "  expected: " ^ expected ^ "\n" ^
+let raise_type_error ~expect ~actual = raise_runtime_error (
+    "  expected: " ^ expect ^ "\n" ^
     "  actual  : " ^ actual
   )
 
@@ -36,7 +36,7 @@ let make_unary_op f =
   let rec op = function
     | Num num -> Num (f num)
     | Vec vec -> Vec (Array.map vec ~f:op)
-    | Fun _   -> raise_type_error ~expected:"number or vector" ~actual:"function"
+    | Fun _   -> raise_type_error ~expect:"number or vector" ~actual:"function"
   in
   Fun op
 
@@ -78,16 +78,17 @@ end
 (* binary operators *)
 let make_binary_op f =
   let open Value in
-  let rec op x y = match (x, y) with
-    | (Num num1, Num num2) -> Num (f num1 num2)
-    | (Num _, Vec vec) -> Vec (Array.map vec ~f:(fun elem -> op x elem))
-    | (Vec vec, Num _) -> Vec (Array.map vec ~f:(fun elem -> op elem y))
-    | (Vec vec1, Vec vec2) ->
-      begin
-        try Vec (Array.map2_exn vec1 vec2 ~f:op) with
-        | Invalid_argument _ -> raise_runtime_error "  operating on vectors with unequal lengths"
-      end
-    | (Fun _, _) | (_, Fun _) -> raise_type_error ~expected:"number or vector" ~actual:"function"
+  let rec op = function
+    | Fun _ -> raise_type_error ~expect:"number or vector" ~actual:"function"
+    | x -> function
+      | Fun _ -> raise_type_error ~expect:"number or vector" ~actual:"function"
+      | y -> match (x, y) with
+        | (Fun _, _) | (_, Fun _) -> raise_type_error ~expect:"number or vector" ~actual:"function"
+        | (Num num1, Num num2) -> Num (f num1 num2)
+        | (Num _, Vec vec) -> Vec (Array.map vec ~f:(fun elem -> op x elem))
+        | (Vec vec, Num _) -> Vec (Array.map vec ~f:(fun elem -> op elem y))
+        | (Vec vec1, Vec vec2) -> try Vec (Array.map2_exn vec1 vec2 ~f:op) with
+          | Invalid_argument _ -> raise_runtime_error "  operating on vectors with unequal lengths"
   in
   Fun (fun x -> Fun (op x))
 
@@ -118,29 +119,29 @@ module V = struct
               | Some index -> at vec index
               | None -> raise_runtime_error ("  invalid index: " ^ Float.to_string num)
             end
-          | v -> raise_type_error ~expected:"number" ~actual:(type_string_of v)
+          | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
         )
-      | v -> raise_type_error ~expected:"vector" ~actual:(type_string_of v)
+      | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
     )
 
   let v_len = Fun (function
       | Vec vec -> Num (Float.of_int (Array.length vec))
-      | v -> raise_type_error ~expected:"vector" ~actual:(type_string_of v)
+      | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
     )
 
   let v_fst = Fun (function
       | Vec vec ->
         if Array.is_empty vec then raise_runtime_error "  empty vector"
         else Array.get vec 0
-      | v -> raise_type_error ~expected:"vector" ~actual:(type_string_of v)
+      | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
     )
 
   let v_append = Fun (function
       | Vec vec1 -> Fun (function
           | Vec vec2 -> Vec (Array.append vec1 vec2)
-          | v -> raise_type_error ~expected:"vector" ~actual:(type_string_of v)
+          | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
         )
-      | v -> raise_type_error ~expected:"number" ~actual:(type_string_of v)
+      | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
     )
 end
 
@@ -148,11 +149,11 @@ end
 (* accumulation operators *)
 let to_float = function
   | Value.Num num -> num
-  | v -> raise_type_error ~expected:"vector" ~actual:(Value.type_string_of v)
+  | v -> raise_type_error ~expect:"vector" ~actual:(Value.type_string_of v)
 
 let to_float_array = function
   | Value.Vec vec -> Array.map vec ~f:to_float
-  | v -> raise_type_error ~expected:"vector" ~actual:(Value.type_string_of v)
+  | v -> raise_type_error ~expect:"vector" ~actual:(Value.type_string_of v)
 
 let make_accum_op f = Value.Fun (fun v -> Value.Num (to_float_array v |> f))
 

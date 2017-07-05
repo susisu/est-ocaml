@@ -1,7 +1,5 @@
 %{
 open Term
-
-let pos = get_info
 %}
 
 %token <Lexing.position * float> NUM
@@ -41,25 +39,25 @@ aterm:
   | t = var                            { t }
   | t = vec                            { t }
   | LPAREN; t = term; RPAREN           { t }
-  | lhs = aterm; p = EXCL; rhs = aterm { App (pos rhs, App (pos lhs, Var (p, "_!_"),  lhs), rhs) }
+  | lhs = aterm; p = EXCL; rhs = aterm { App (p, App (p, Var (p, "_!_"),  lhs), rhs) }
 
 app:
   | t = aterm               { t }
-  | func = app; arg = aterm { App (pos arg, func, arg) }
+  | func = app; arg = aterm { App (get_info func, func, arg) }
 
 
 op:
   | t = app                         { t }
-  | lhs = op; p = PLUS;  rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_+_"),  lhs), rhs) }
-  | lhs = op; p = MINUS; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_-_"),  lhs), rhs) }
-  | lhs = op; p = TIMES; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_*_"),  lhs), rhs) }
-  | lhs = op; p = FRAC;  rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_/_"),  lhs), rhs) }
-  | lhs = op; p = MOD;   rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_%_"),  lhs), rhs) }
-  | lhs = op; p = POWER; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_**_"), lhs), rhs) }
-  | lhs = op; p = CARET; rhs = op   { App (pos rhs, App (pos lhs, Var (p, "_^_"),  lhs), rhs) }
-  | lhs = op; p = APPEND; rhs = op  { App (pos rhs, App (pos lhs, Var (p, "_@_"),  lhs), rhs) }
-  | p = PLUS;  arg = op %prec UNARY { App (pos arg, Var (p, "+_"), arg) }
-  | p = MINUS; arg = op %prec UNARY { App (pos arg, Var (p, "-_"), arg) }
+  | lhs = op; p = PLUS;  rhs = op   { App (p, App (p, Var (p, "_+_"),  lhs), rhs) }
+  | lhs = op; p = MINUS; rhs = op   { App (p, App (p, Var (p, "_-_"),  lhs), rhs) }
+  | lhs = op; p = TIMES; rhs = op   { App (p, App (p, Var (p, "_*_"),  lhs), rhs) }
+  | lhs = op; p = FRAC;  rhs = op   { App (p, App (p, Var (p, "_/_"),  lhs), rhs) }
+  | lhs = op; p = MOD;   rhs = op   { App (p, App (p, Var (p, "_%_"),  lhs), rhs) }
+  | lhs = op; p = POWER; rhs = op   { App (p, App (p, Var (p, "_**_"), lhs), rhs) }
+  | lhs = op; p = CARET; rhs = op   { App (p, App (p, Var (p, "_^_"),  lhs), rhs) }
+  | lhs = op; p = APPEND; rhs = op  { App (p, App (p, Var (p, "_@_"),  lhs), rhs) }
+  | p = PLUS;  arg = op %prec UNARY { App (p, Var (p, "+_"), arg) }
+  | p = MINUS; arg = op %prec UNARY { App (p, Var (p, "-_"), arg) }
 
 
 bind:
