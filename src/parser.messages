@@ -153,7 +153,7 @@ toplevel: NUM POWER TIMES
 ##
 toplevel: NUM CARET TIMES
 ##
-## Ends in an error in state: 28.
+## Ends in an error in state: 20.
 ##
 ## op -> op CARET . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
@@ -162,7 +162,7 @@ toplevel: NUM CARET TIMES
 ##
 toplevel: NUM APPEND TIMES
 ##
-## Ends in an error in state: 20.
+## Ends in an error in state: 22.
 ##
 ## op -> op APPEND . op [ TIMES RPAREN RBRACKET POWER PLUS MOD MINUS IN FRAC EOF COMMA CARET APPEND ]
 ##
@@ -171,7 +171,7 @@ toplevel: NUM APPEND TIMES
 ##
 toplevel: NUM EXCL TIMES
 ##
-## Ends in an error in state: 24.
+## Ends in an error in state: 26.
 ##
 ## aterm -> aterm EXCL . aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
 ##
@@ -194,13 +194,13 @@ toplevel: NUM RPAREN
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 23, spurious reduction of production app -> aterm
-## In state 26, spurious reduction of production op -> app
+## In state 25, spurious reduction of production app -> aterm
+## In state 28, spurious reduction of production op -> app
 ## In state 15, spurious reduction of production term -> op
 ##
 toplevel: NUM LET
 ##
-## Ends in an error in state: 23.
+## Ends in an error in state: 25.
 ##
 ## app -> aterm . [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EOF COMMA CARET APPEND ]
 ## aterm -> aterm . EXCL aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
@@ -210,7 +210,7 @@ toplevel: NUM LET
 ##
 toplevel: NUM NUM LET
 ##
-## Ends in an error in state: 27.
+## Ends in an error in state: 29.
 ##
 ## app -> app aterm . [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EOF COMMA CARET APPEND ]
 ## aterm -> aterm . EXCL aterm [ TIMES RPAREN RBRACKET POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
@@ -235,8 +235,8 @@ toplevel: LBRACKET NUM RPAREN
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 23, spurious reduction of production app -> aterm
-## In state 26, spurious reduction of production op -> app
+## In state 25, spurious reduction of production app -> aterm
+## In state 28, spurious reduction of production op -> app
 ## In state 15, spurious reduction of production term -> op
 ##
 
@@ -255,8 +255,8 @@ toplevel: LET ID EQUAL NUM RPAREN
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 23, spurious reduction of production app -> aterm
-## In state 26, spurious reduction of production op -> app
+## In state 25, spurious reduction of production app -> aterm
+## In state 28, spurious reduction of production op -> app
 ## In state 15, spurious reduction of production term -> op
 ##
 
@@ -275,8 +275,8 @@ toplevel: LPAREN NUM RBRACKET
 ## This implies that, although the LR(1) items shown above provide an
 ## accurate view of the past (what has been recognized so far), they
 ## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 23, spurious reduction of production app -> aterm
-## In state 26, spurious reduction of production op -> app
+## In state 25, spurious reduction of production app -> aterm
+## In state 28, spurious reduction of production op -> app
 ## In state 15, spurious reduction of production term -> op
 ##
 

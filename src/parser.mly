@@ -15,7 +15,7 @@ open Term
 
 %left PLUS MINUS
 %left TIMES FRAC MOD
-%left POWER CARET
+%right POWER CARET
 %left APPEND
 %nonassoc UNARY
 %left EXCL
