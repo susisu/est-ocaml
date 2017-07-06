@@ -42,7 +42,7 @@ module Table = struct
   let print_endline_to_channel ch line = Out_channel.output_string ch (line ^ "\n")
 
   let rank0_to_string prec = function
-    | Value.Num num -> sprintf "%.*f" prec num
+    | Value.Num num -> sprintf "%.*e" prec num
     | Value.Fun _ -> raise_unexpected "function"
     | Value.Vec _ -> raise_unexpected "vector"
 
