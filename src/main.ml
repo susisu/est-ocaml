@@ -59,18 +59,18 @@ let readers =
 
 let create_read_from_channel name opts =
   match Map.find readers name with
-  | Some reader ->
-    let module R = (val reader) in
-    let opts' = match opts with
-      | None -> R.default_options
-      | Some s -> try Sexp.of_string s |> R.options_of_sexp with
-        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("ill-formed reader option: " ^ s)
-    in
-    R.read_from_channel opts'
   | None -> die (
       "unknown reader name: " ^ name ^ "\n" ^
       "see -list-readers for the available reader names"
     )
+  | Some reader ->
+    let module R = (val reader) in
+    let opts' = match opts with
+      | None -> R.default_options
+      | Some s -> try R.options_of_sexp s with
+        | e -> die ("ill-formed reader option:\n" ^ Exn.to_string e)
+    in
+    R.read_from_channel opts'
 
 let printers =
   let open Printer in
@@ -80,18 +80,18 @@ let printers =
 
 let create_print_to_channel name opts =
   match Map.find printers name with
-  | Some printer ->
-    let module P = (val printer) in
-    let opts' = match opts with
-      | None -> P.default_options
-      | Some s -> try Sexp.of_string s |> P.options_of_sexp with
-        | Failure _ | Sexplib.Conv.Of_sexp_error _ -> die ("ill-formed printer option: " ^ s)
-    in
-    P.print_to_channel opts'
   | None -> die (
       "unknown printer name: " ^ name ^ "\n" ^
       "see -list-printers for the available printer names"
     )
+  | Some printer ->
+    let module P = (val printer) in
+    let opts' = match opts with
+      | None -> P.default_options
+      | Some s -> try P.options_of_sexp s with
+        | e -> die ("ill-formed printer option:\n" ^ Exn.to_string e)
+    in
+    P.print_to_channel opts'
 
 let print_list list = List.iter list ~f:(fun item -> print_endline ("  " ^ item))
 
@@ -116,16 +116,22 @@ let spec =
     )
   +> flag "-list-readers" (no_arg_abort ~exit:(fun () -> list_readers (); exit 0))
     ~doc:"print list of the available readers"
+    ~aliases:["-ls-r"; "-ls-readers"]
   +> flag "-list-printers" (no_arg_abort ~exit:(fun () -> list_printers (); exit 0))
     ~doc:"print list of the available printers"
+    ~aliases:["-ls-p"; "-ls-printers"]
   +> flag "-reader" (optional_with_default "table" string)
     ~doc:"NAME specify reader (default: table)"
-  +> flag "-reader-options" (optional string)
+    ~aliases:["-r"]
+  +> flag "-reader-options" (optional sexp)
     ~doc:"SEXP specify reader options"
+    ~aliases:["-ro"]
   +> flag "-printer" (optional_with_default "table" string)
     ~doc:"NAME specify printer (default: table)"
-  +> flag "-printer-options" (optional string)
+    ~aliases:["-p"]
+  +> flag "-printer-options" (optional sexp)
     ~doc:"SEXP specify printer options"
+    ~aliases:["-po"]
   +> anon ("program" %: string)
   +> anon (sequence ("files" %: file))
 
