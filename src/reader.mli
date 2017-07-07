@@ -10,6 +10,7 @@ end
 
 module Table_options : sig
   type t = {
+    separator: char list;
     transpose: bool;
   } [@@deriving sexp]
 end
