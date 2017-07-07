@@ -16,12 +16,12 @@ OCAMLBUILD_FLAGS = -use-ocamlfind \
 OCAMLBUILD = ocamlbuild $(OCAMLBUILD_FLAGS)
 
 
-.PHONY: all clean sanity \
+.PHONY: default clean sanity \
 	update-parser-messages compare-parser-messages parser-messages \
-	byte native debug all
+	byte native debug default
 
 
-all: byte native;
+default: native;
 
 clean:
 	$(OCAMLBUILD) -clean
