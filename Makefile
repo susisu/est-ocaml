@@ -35,7 +35,7 @@ sanity:
 
 update-parser-messages: sanity
 	$(MENHIR) src/parser.mly --update-errors src/parser.messages \
-		| sed 's/[ \t]*$$//' \ # remove trailing spaces
+		| sed 's/[ \t]*$$//' \
 		> $(TEMPDIR)/parser.messages.new
 	cp src/parser.messages $(TEMPDIR)/parser.messages.bak
 	cp $(TEMPDIR)/parser.messages.new src/parser.messages
