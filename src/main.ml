@@ -93,7 +93,7 @@ let create_print_to_channel name opts =
     in
     P.print_to_channel opts'
 
-let print_list list = List.iter list ~f:(fun item -> print_endline ("  " ^ item))
+let print_list list = List.iter list ~f:(fun item -> print_endline item)
 
 let list_readers () = Map.keys readers |> print_list
 
