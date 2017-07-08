@@ -136,6 +136,8 @@ let spec =
   +> anon (sequence ("files" %: file))
 
 let command = Command.basic spec main
-    ~summary:"Simple calculator"
+    ~summary:"est: Simple vector calculator"
 
 let () = Command.run command
+    ~version:"0.1.0"
+    ~build_info:""
