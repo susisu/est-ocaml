@@ -29,7 +29,7 @@ clean:
 
 sanity:
 	mkdir -p $(TEMPDIR)
-	which menhir
+	which ocamlbuild ocamlfind menhir
 	ocamlfind query core menhirlib re2
 
 
