@@ -51,7 +51,7 @@ An executable will be created at `_build/src/main.native`.
 est [FLAGS] PROGRAM [FILES ...]
 ```
 
-For program's syntax and language features, see [Language](#Language).
+For program's syntax and language features, see [Language](#language).
 
 If `-` is given for a file, it will read data from the standard input.
 
@@ -67,7 +67,7 @@ If `-` is given for a file, it will read data from the standard input.
 | `-list-printers`        | `-ls-p`, `-ls-printers` | print list of the available printers |
 
 *Readers* and *printers*, as their names suggest, are used to read and print data.
-See [Readers](#Readers) and [Printers](#Printers) for detailed information.
+See [Readers](#readers) and [Printers](#printers) for detailed information.
 
 ### Readers
 *Readers* (not you!) are used to read data from input files.
@@ -139,7 +139,7 @@ All of `x`, `x1`, `Foo_bar'` and `$0` are valid identifiers.
 For example, `let x = 1 + 2 in 3 * x` is evaluated to `9`.
 
 In addition, operators also can be used in expressions.
-See [Operators](#Operators) for the available operators and the precedence between them.
+See [Operators](#operators) for the available operators and the precedence between them.
 
 #### Types
 There are three types of values:
