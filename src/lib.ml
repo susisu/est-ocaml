@@ -156,6 +156,12 @@ let to_float_array = function
   | v -> raise_type_error ~expect:"vector" ~actual:(Value.type_string_of v)
 
 let make_accum_op f = Value.Fun (fun v -> Value.Num (to_float_array v |> f))
+let make_accum_op2 f =
+  Value.Fun (fun v1 ->
+      Value.Fun (fun v2 ->
+          Value.Num (f (to_float_array v1) (to_float_array v2))
+        )
+    )
 
 module A = struct
   let sum vec =
@@ -171,7 +177,8 @@ module A = struct
   let avg vec = sum vec /. Float.of_int (Array.length vec)
 
   let var vec =
-    if Array.is_empty vec then Float.nan
+    let len = Array.length vec in
+    if len = 0 then Float.nan
     else
       let mean = avg vec in
       let z =
@@ -184,10 +191,30 @@ module A = struct
             )
         |> fst
       in
-      z /. Float.of_int (Array.length vec - 1)
+      z /. Float.of_int (len - 1)
 
   let stddev vec = Float.sqrt (var vec)
   let stderr vec = Float.sqrt (var vec /. Float.of_int (Array.length vec))
+
+  let cov vec1 vec2 =
+    let len1 = Array.length vec1 in
+    let len2 = Array.length vec2 in
+    if len1 <> len2 then raise_runtime_error "  operating on vectors with unequal lengths"
+    else if len1 = 0 then Float.nan
+    else
+      let mean1 = avg vec1 in
+      let mean2 = avg vec2 in
+      let z =
+        Array.fold2_exn vec1 vec2
+          ~init:(0.0, 0.0)
+          ~f:(fun (s, c) x1 x2 ->
+              let y = (x1 -. mean1) *. (x2 -. mean2) -. c in
+              let t = s +. y in
+              (t, (t -. s) -. y)
+            )
+        |> fst
+      in
+      z /. Float.of_int (len1 - 1)
 
   let v_sum    = make_accum_op sum
   let v_prod   = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
@@ -195,6 +222,7 @@ module A = struct
   let v_var    = make_accum_op var
   let v_stddev = make_accum_op stddev
   let v_stderr = make_accum_op stderr
+  let v_cov    = make_accum_op2 cov
 end
 
 
@@ -254,4 +282,5 @@ let std = Eval.Context.of_alist [
     ("var"   , A.v_var);
     ("stddev", A.v_stddev);
     ("stderr", A.v_stderr);
+    ("cov"   , A.v_cov);
   ]

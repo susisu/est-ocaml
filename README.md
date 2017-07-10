@@ -225,13 +225,14 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `log_`   | number → number → number | `log_ b a` = base b logarithm of a         |
 | `atan2`  | number → number → number | `atan y x` = arctangent of y/x (-pi to pi) |
 | `len`    | vector → number           | vector length                              |
-| `fst`    | vector → *                | first component of a vector               |
+| `fst`    | vector → *                | first component of a vector                |
 | `sum`    | vector → number           | sum of a number vector                     |
 | `prod`   | vector → number           | product of a number vector                 |
 | `avg`    | vector → number           | average                                    |
 | `var`    | vector → number           | variance                                   |
 | `stddev` | vector → number           | standard deviation                         |
 | `stderr` | vector → number           | standard error                             |
+| `cov`    | vector → vector → number | covariance                                 |
 
 The mathematical functions which takes numbers also accept number vectors.
 For example, `sign [2, -3, 0]` produces `[1, -1, 0]`.
