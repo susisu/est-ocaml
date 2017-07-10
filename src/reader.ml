@@ -1,6 +1,6 @@
 open Core
 
-module type Reader = sig
+module type Reader_intf = sig
   type options
   val default_options : options
   val options_of_sexp : Sexplib.Sexp.t -> options

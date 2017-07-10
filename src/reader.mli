@@ -1,6 +1,6 @@
 open Core
 
-module type Reader = sig
+module type Reader_intf = sig
   type options
   val default_options : options
   val options_of_sexp : Sexplib.Sexp.t -> options
@@ -17,10 +17,10 @@ end
 
 module Table : sig
   type options = Table_options.t
-  include Reader with type options := Table_options.t
+  include Reader_intf with type options := Table_options.t
 end
 
 module Table_extended : sig
   type options = Table_options.t
-  include Reader with type options := Table_options.t
+  include Reader_intf with type options := Table_options.t
 end

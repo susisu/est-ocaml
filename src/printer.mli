@@ -1,6 +1,6 @@
 open Core
 
-module type Printer = sig
+module type Printer_intf = sig
   type options
   val default_options : options
   val options_of_sexp : Sexplib.Sexp.t -> options
@@ -20,5 +20,5 @@ end
 
 module Table : sig
   type options = Table_options.t
-  include Printer with type options := Table_options.t
+  include Printer_intf with type options := Table_options.t
 end

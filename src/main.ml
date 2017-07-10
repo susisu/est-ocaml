@@ -53,8 +53,8 @@ let print_value print_to_channel value =
 let readers =
   let open Reader in
   String.Map.of_alist_reduce ~f:(fun _ x -> x) [
-    ("table",    (module Table : Reader));
-    ("table_ex", (module Table_extended : Reader))
+    ("table",    (module Table : Reader_intf));
+    ("table_ex", (module Table_extended : Reader_intf))
   ]
 
 let create_read_from_channel name opts =
@@ -75,7 +75,7 @@ let create_read_from_channel name opts =
 let printers =
   let open Printer in
   String.Map.of_alist_reduce ~f:(fun _ x -> x) [
-    ("table", (module Table : Printer));
+    ("table", (module Table : Printer_intf));
   ]
 
 let create_print_to_channel name opts =
