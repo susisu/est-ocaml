@@ -18,7 +18,4 @@ module Table_options : sig
   } [@@deriving sexp]
 end
 
-module Table : sig
-  type options = Table_options.t
-  include Printer_intf with type options := Table_options.t
-end
+module Table : Printer_intf with type options = Table_options.t

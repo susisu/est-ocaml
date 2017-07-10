@@ -15,12 +15,6 @@ module Table_options : sig
   } [@@deriving sexp]
 end
 
-module Table : sig
-  type options = Table_options.t
-  include Reader_intf with type options := Table_options.t
-end
+module Table : Reader_intf with type options = Table_options.t
 
-module Table_extended : sig
-  type options = Table_options.t
-  include Reader_intf with type options := Table_options.t
-end
+module Table_extended : Reader_intf with type options = Table_options.t
