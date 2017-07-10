@@ -96,7 +96,7 @@ The default options are as follows:
 ```
 
 All fields are optional and the default values will be used if not specified.
-For example, if `-reader-options '((transpose true))'` is specifyed, tables will be transposed (rows and columns are interchanged), while the default separators will be used.
+For example, if `-reader-options '((transpose true))'` is specified, tables will be transposed (rows and columns are interchanged), while the default separators will be used.
 
 ### Printers
 *Printers* are used to print data to the stream.
@@ -153,7 +153,7 @@ A number is an IEEE 754 double precision floating point number (so it can be `na
 A vector value is an array of zero or more values.
 Values in a vector can have any type and can be different to each other.
 
-In the tables below, `*` is used to describe an unknwon type, which can be any one of the three types.
+In the tables below, `*` is used to describe an unknown type, which can be any one of the three types.
 
 #### Predefined constants
 |   name    |  type  |           description            |
@@ -186,7 +186,7 @@ The arithmetic operators also accept number vectors: `[1, 2, 3] * 4` produces `[
 Note that a multiplication of two vectors does not mean inner or outer product.
 
 The precedence of the operators (and application) is as follows.
-`!` has the hightest precedence, and binary `+` and `-` have the lowest.
+`!` has the highest precedence, and binary `+` and `-` have the lowest.
 
 1. `!`
 2. application
@@ -225,7 +225,7 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `log_`   | number → number → number | `log_ b a` = base b logarithm of a         |
 | `atan2`  | number → number → number | `atan y x` = arctangent of y/x (-pi to pi) |
 | `len`    | vector → number           | vector length                              |
-| `fst`    | vector → *                | first compoenent of a vector               |
+| `fst`    | vector → *                | first component of a vector               |
 | `sum`    | vector → number           | sum of a number vector                     |
 | `prod`   | vector → number           | product of a number vector                 |
 | `avg`    | vector → number           | average                                    |
