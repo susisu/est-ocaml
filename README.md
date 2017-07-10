@@ -48,7 +48,7 @@ An executable will be created at `_build/src/main.native`.
 ## Usage
 ### Synopsis
 ```
-est [FLAGS] PROGRAM [FILES ...]
+est PROGRAM [FILES ...]
 ```
 
 For program's syntax and language features, see [Language](#language).
