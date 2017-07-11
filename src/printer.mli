@@ -12,8 +12,10 @@ exception Print_error of string
 
 module Table_options : sig
   type t = {
+    strict   : bool;
     separator: string;
     precision: int;
+    default  : float;
     transpose: bool;
   } [@@deriving sexp]
 end
