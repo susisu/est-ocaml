@@ -1,9 +1,9 @@
 open Core
 
-let raise_runtime_error msg = raise (Eval.Runtime_error msg)
+let raise_runtime_error msg = raise (Eval.Runtime_error (None, msg))
 let raise_type_error ~expect ~actual = raise_runtime_error (
-    "  expected: " ^ expect ^ "\n" ^
-    "  actual  : " ^ actual
+    "expected: " ^ expect ^ "\n" ^
+    "actual  : " ^ actual
   )
 
 (* constants *)
@@ -88,7 +88,7 @@ let make_binary_op f =
         | (Num _, Vec vec) -> Vec (Array.map vec ~f:(fun elem -> op x elem))
         | (Vec vec, Num _) -> Vec (Array.map vec ~f:(fun elem -> op elem y))
         | (Vec vec1, Vec vec2) -> try Vec (Array.map2_exn vec1 vec2 ~f:op) with
-          | Invalid_argument _ -> raise_runtime_error "  operating on vectors with unequal lengths"
+          | Invalid_argument _ -> raise_runtime_error "operating on vectors with unequal lengths"
   in
   Fun (fun x -> Fun (op x))
 
@@ -109,7 +109,7 @@ module V = struct
   open Value
 
   let at vec index = try Array.get vec index with
-    | Invalid_argument _ -> raise_runtime_error ("  index out of bounds: " ^ Int.to_string index)
+    | Invalid_argument _ -> raise_runtime_error ("index out of bounds: " ^ Int.to_string index)
 
   let v_at = Fun (function
       | Vec vec -> Fun (function
@@ -117,7 +117,7 @@ module V = struct
             begin
               match Float.iround_down num with
               | Some index -> at vec index
-              | None -> raise_runtime_error ("  invalid index: " ^ Float.to_string num)
+              | None -> raise_runtime_error ("invalid index: " ^ Float.to_string num)
             end
           | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
         )
@@ -131,7 +131,7 @@ module V = struct
 
   let v_fst = Fun (function
       | Vec vec ->
-        if Array.is_empty vec then raise_runtime_error "  empty vector"
+        if Array.is_empty vec then raise_runtime_error "empty vector"
         else Array.get vec 0
       | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
     )
@@ -199,7 +199,7 @@ module A = struct
   let cov vec1 vec2 =
     let len1 = Array.length vec1 in
     let len2 = Array.length vec2 in
-    if len1 <> len2 then raise_runtime_error "  operating on vectors with unequal lengths"
+    if len1 <> len2 then raise_runtime_error "operating on vectors with unequal lengths"
     else if len1 = 0 then Float.nan
     else
       let mean1 = avg vec1 in

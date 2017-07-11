@@ -1,6 +1,6 @@
 open Core
 
-exception Runtime_error of string
+exception Runtime_error of string option * string
 
 module Context = struct
   type t = Value.t String.Map.t
@@ -16,9 +16,7 @@ module Context = struct
 end
 
 module Make_eval(Info : Common.Showable) = struct
-  let raise_runtime_error info msg =
-    let msg' = sprintf "runtime error at %s:\n%s" (Info.to_string info) msg in
-    raise (Runtime_error msg')
+  let raise_runtime_error info msg = raise (Runtime_error (Some (Info.to_string info), msg))
 
   let rec eval ctx = function
     | Term.Lit (_, v) -> v
@@ -26,7 +24,7 @@ module Make_eval(Info : Common.Showable) = struct
       begin
         match Map.find ctx name with
         | Some v -> v
-        | None -> raise_runtime_error info ("  unbound variable: " ^ name)
+        | None -> raise_runtime_error info ("unbound variable: " ^ name)
       end
     | Term.Vec (_, elems) -> Value.Vec (List.map elems ~f:(eval ctx) |> Array.of_list)
     | Term.App (_, func, arg) ->
@@ -36,11 +34,12 @@ module Make_eval(Info : Common.Showable) = struct
           let a = eval ctx arg in
           begin
             try f a with
-            | Runtime_error msg -> raise_runtime_error (Term.get_info arg) msg
+            | Runtime_error (Some _, _) as err -> raise err
+            | Runtime_error (None, msg) -> raise_runtime_error (Term.get_info arg) msg
           end
         | v -> raise_runtime_error (Term.get_info func) (
-            "  expected: function\n" ^
-            "  actual  : " ^ Value.type_string_of v
+            "expected: function\n" ^
+            "actual  : " ^ Value.type_string_of v
           )
       end
     | Term.Let (_, name, expr, body) ->

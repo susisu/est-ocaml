@@ -4,3 +4,5 @@ module type Showable = sig
 end
 
 module Position : Showable with type t = Lexing.position
+
+val format_error_message : string -> string -> string

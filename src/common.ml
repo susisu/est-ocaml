@@ -20,3 +20,11 @@ module Position = struct
     in
     sprintf "%s(line %d, column %d)" fname_prefix lnum cnum
 end
+
+let indent size str = String.split_lines str
+                      |> List.map ~f:(fun line -> String.make size ' ' ^ line)
+                      |> String.concat ~sep:"\n"
+
+let format_error_message msg detail =
+  if detail = "" then msg
+  else msg ^ ":\n" ^ indent 2 detail

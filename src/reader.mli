@@ -7,6 +7,8 @@ module type Reader_intf = sig
   val read_from_channel : options -> int -> In_channel.t -> Eval.Context.t
 end
 
+exception Read_error of string
+
 
 module Table_options : sig
   type t = {

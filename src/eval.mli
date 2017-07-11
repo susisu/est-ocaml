@@ -1,6 +1,6 @@
 open Core
 
-exception Runtime_error of string
+exception Runtime_error of string option * string
 
 module Context : sig
   type t

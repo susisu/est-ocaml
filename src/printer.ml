@@ -7,7 +7,7 @@ module type Printer_intf = sig
   val print_to_channel : options -> Out_channel.t -> Value.t -> unit
 end
 
-exception Ill_formed_output of string
+exception Print_error of string
 
 
 module Table_options = struct
@@ -34,10 +34,10 @@ module Table = struct
       else Array.fold vec ~init:0 ~f:(fun r elem ->
           let r' = rank elem + 1 in
           if r = 0 || r = r' then r'
-          else raise (Ill_formed_output "not structured data")
+          else raise (Print_error "not structured data")
         )
 
-  let raise_unexpected name = raise (Ill_formed_output ("unexpected " ^ name))
+  let raise_unexpected name = raise (Print_error ("unexpected " ^ name))
 
   let print_endline_to_channel ch line = Out_channel.output_string ch (line ^ "\n")
 
@@ -90,5 +90,5 @@ module Table = struct
     | 0 -> print_rank0 prec ch v
     | 1 -> print_rank1 sep prec trans ch v
     | 2 -> print_rank2 sep prec trans ch v
-    | r -> raise (Ill_formed_output ("rank is too high: " ^ Int.to_string r))
+    | r -> raise (Print_error ("rank is too high: " ^ Int.to_string r))
 end

@@ -7,7 +7,7 @@ module type Printer_intf = sig
   val print_to_channel : options -> Out_channel.t -> Value.t -> unit
 end
 
-exception Ill_formed_output of string
+exception Print_error of string
 
 
 module Table_options : sig

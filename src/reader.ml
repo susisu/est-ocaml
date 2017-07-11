@@ -7,6 +7,8 @@ module type Reader_intf = sig
   val read_from_channel : options -> int -> In_channel.t -> Eval.Context.t
 end
 
+exception Read_error of string
+
 
 let split_words sep str = String.split_on_chars ~on:sep str
                       |> List.filter ~f:(fun word -> word <> "")

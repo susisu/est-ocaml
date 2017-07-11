@@ -4,6 +4,8 @@ let die msg =
   Out_channel.output_string Out_channel.stderr (msg ^ "\n");
   exit 1
 
+let die_error msg detail = die (Common.format_error_message msg detail)
+
 
 let parse_program prog =
   let lexbuf = Lexing.from_string prog in
@@ -11,43 +13,40 @@ let parse_program prog =
   let open Parser.MenhirInterpreter in
   let succeed term = term in
   let fail = function
-    | HandlingError e ->
-      let (p, _) = positions e in
-      let p_str = Common.Position.to_string p in
-      let s = current_state_number e in
-      let msg =
-        try String.drop_suffix (Parser_messages.message s) 1 with
+    | HandlingError env ->
+      let pos = positions env |> fst |> Common.Position.to_string in
+      let state = current_state_number env in
+      let msg = try String.drop_suffix (Parser_messages.message state) 1 with
         | Not_found -> ""
       in
-      let msg' =
-        if msg = "" then sprintf "parse error at %s" p_str
-        else sprintf "parse error at %s:\n  %s" p_str msg
-      in
-      die msg'
+      die_error ("parse error at " ^ pos) msg
     | _ -> die "parse error"
   in
   let suppiler = lexer_lexbuf_to_supplier Lexer.main lexbuf in
   let checkpoint = Parser.Incremental.toplevel lexbuf.Lexing.lex_curr_p in
   try loop_handle succeed fail suppiler checkpoint with
-  | Lexer.Error msg -> die msg
+  | Lexer.Lex_error (pos, msg) -> die_error ("parse error at" ^ pos) msg
 
 
 let read_data read_from_channel id file =
-  match file with
-  | "-" -> read_from_channel id In_channel.stdin
-  | _ -> try In_channel.with_file file ~f:(read_from_channel id) with
-    | Sys_error msg -> die msg
+  try match file with
+    | "-" -> read_from_channel id In_channel.stdin
+    | _ -> In_channel.with_file file ~f:(read_from_channel id)
+  with
+  | Sys_error msg -> die msg
+  | Reader.Read_error msg -> die_error "read error" msg
 
 
 let eval_term ctx term =
   let module E = Eval.Make_eval(Common.Position) in
   try E.eval ctx term with
-  | Eval.Runtime_error msg -> die msg
+  | Eval.Runtime_error (Some pos, msg) -> die_error ("runtime error at " ^ pos) msg
+  | Eval.Runtime_error (None, msg) -> die_error "runtime error" msg
 
 
 let print_value print_to_channel value =
   try print_to_channel Out_channel.stdout value with
-  | Printer.Ill_formed_output msg -> die ("ill-formed output: " ^ msg)
+  | Printer.Print_error msg -> die_error "print error" msg
 
 
 let readers =
