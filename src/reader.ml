@@ -11,21 +11,27 @@ exception Read_error of string
 
 
 let split_words sep str = String.split_on_chars ~on:sep str
-                      |> List.filter ~f:(fun word -> word <> "")
+                          |> List.filter ~f:(fun word -> word <> "")
 
-let read_num str =
+let read_num strict default str =
   let num = try Float.of_string str with
-    | Invalid_argument _ -> Float.nan
+    | Invalid_argument _ ->
+      if strict then raise (Read_error ("cannot read as a number: " ^ str))
+      else default
   in
   Value.Num num
 
-let read_line sep line = split_words sep line |> List.map ~f:read_num
+let read_line strict sep default line =
+  split_words sep line |> List.map ~f:(read_num strict default)
 
-let create_table sep lines =
-  let lines = List.map lines ~f:(read_line sep) in
-  let width = List.fold lines ~init:0 ~f:(fun w line -> Int.max w (List.length line)) in
+let create_table strict sep default lines =
+  let lines = List.map lines ~f:(read_line strict sep default) in
+  let widths = List.map lines ~f:List.length in
+  let width = List.fold widths ~init:0 ~f:Int.max in
+  if strict && List.exists widths ~f:(fun w -> w <> width) then
+    raise (Read_error "table is incomplete");
   List.map lines ~f:(fun line ->
-      let row = Array.create ~len:width (Value.Num Float.nan) in
+      let row = Array.create ~len:width (Value.Num default) in
       List.iteri line ~f:(fun i v -> row.(i) <- v);
       row
     )
@@ -47,30 +53,39 @@ let create_ctx_alist id table =
 
 module Table_options = struct
   type t = {
+    strict   : bool      [@default true];
     separator: char list [@default [' '; '\t']];
-    transpose: bool [@default false];
+    default  : float     [@default Float.nan];
+    transpose: bool      [@default false];
   } [@@deriving sexp]
 end
 
 
 module Table = struct
   type options = Table_options.t
-  let default_options = {
-    Table_options.separator = [' '; '\t'];
-    Table_options.transpose = false;
-  }
+  let default_options = Table_options.({
+      strict    = true;
+      separator = [' '; '\t'];
+      default   = Float.nan;
+      transpose = false;
+    })
   let options_of_sexp = Table_options.t_of_sexp
 
   let remove_comments lines =
     List.filter lines ~f:(fun line -> String.prefix line 1 <> "#")
 
   let read_from_channel opts id ch =
-    let separator = opts.Table_options.separator in
-    let transpose = if opts.Table_options.transpose then Fn.id else Array.transpose_exn in
+    let {
+      Table_options.strict;
+      Table_options.separator = sep;
+      Table_options.default;
+      Table_options.transpose = trans;
+    } = opts in
+    let transpose = if trans then Fn.id else Array.transpose_exn in
     let table = In_channel.input_lines ch
                 |> List.filter ~f:(fun line -> line <> "")
                 |> remove_comments
-                |> create_table separator
+                |> create_table strict sep default
                 |> transpose
                 |> Array.map ~f:(fun row -> Value.Vec row)
     in
@@ -81,36 +96,49 @@ end
 
 module Table_extended = struct
   type options = Table_options.t
-  let default_options = {
-    Table_options.separator = [' '; '\t'];
-    Table_options.transpose = false;
-  }  let options_of_sexp = Table_options.t_of_sexp
+  let default_options = Table_options.({
+      strict    = true;
+      separator = [' '; '\t'];
+      default   = Float.nan;
+      transpose = false;
+    })
+  let options_of_sexp = Table_options.t_of_sexp
 
   let valid_name_re = Re2.Regex.create_exn "^[A-Za-z\\$][A-Za-z0-9\\$_']*$"
-  let validate_name name = Re2.Regex.matches valid_name_re name
+  let valid_name name = Re2.Regex.matches valid_name_re name
 
-  let read_const consts str = match split_words [' '; '\t'] str with
-    | [name; value] -> if validate_name name then
-        Hashtbl.set consts ~key:name ~data:(read_num value)
+  let read_const consts strict default str =
+    match split_words [' '; '\t'] str with
+    | [name; value] ->
+      if valid_name name then
+        Hashtbl.set consts ~key:name ~data:(read_num strict default value)
+      else if strict then
+        raise (Read_error ("invalid name: " ^ name))
     | _ -> ()
 
-  let read_and_remove_comments consts lines =
+  let read_and_remove_comments consts strict default lines =
     List.filter lines ~f:(fun line ->
         if String.prefix line 1 <> "#" then true
         else begin
-          if String.prefix line 2 = "##" then read_const consts (String.drop_prefix line 2);
+          if String.prefix line 2 = "##" then
+            read_const consts strict default (String.drop_prefix line 2);
           false
         end
       )
 
   let read_from_channel opts id ch =
-    let separator = opts.Table_options.separator in
-    let transpose = if opts.Table_options.transpose then Fn.id else Array.transpose_exn in
+    let {
+      Table_options.strict;
+      Table_options.separator = sep;
+      Table_options.default;
+      Table_options.transpose = trans;
+    } = opts in
+    let transpose = if trans then Fn.id else Array.transpose_exn in
     let consts = Hashtbl.create ~hashable:String.hashable () in
     let table = In_channel.input_lines ch
                 |> List.filter ~f:(fun line -> line <> "")
-                |> read_and_remove_comments consts
-                |> create_table separator
+                |> read_and_remove_comments consts strict default
+                |> create_table strict sep default
                 |> transpose
                 |> Array.map ~f:(fun row -> Value.Vec row)
     in
