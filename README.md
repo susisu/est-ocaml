@@ -91,7 +91,9 @@ Options for the reader can be specified by `-reader-options` flag, in an S-expre
 The default options are as follows:
 
 ``` lisp
-((separator (" " "\t")) ; separator(s) used to separate numbers in rows
+((strict true)          ; warns if table contains an empty or invalid entry
+ (separator (" " "\t")) ; separator(s) used to separate numbers in rows
+ (default nan)          ; default value to fill empty or invalid entries
  (transpose false))     ; if true, tables will be transposed
 ```
 
@@ -107,8 +109,10 @@ Options for the printer can be specified by `-printer-options` flag, in an S-exp
 The default options are as follows:
 
 ``` lisp
-((separator "\t")   ; separator used to separate numbers in rows
+((strict true)      ; warns if table contains an empty entry
+ (separator "\t")   ; separator used to separate numbers in rows
  (precision 8)      ; maximum number of digits of output numbers
+ (default nan)      ; default value to fill empty entries
  (transpose false)) ; if true, table will be transposed
 ```
 
