@@ -27,15 +27,15 @@ module Printer_config = struct
 end
 
 type t = {
-  default_reader  : string sexp_option;
-  default_printer : string sexp_option;
+  reader          : string sexp_option;
+  printer         : string sexp_option;
   reader_options  : Reader_config.options  [@default Reader_config.empty_options];
   printer_options : Printer_config.options [@default Printer_config.empty_options];
 } [@@deriving sexp]
 
 let default = {
-  default_reader  = None;
-  default_printer = None;
+  reader          = None;
+  printer         = None;
   reader_options  = Reader_config.empty_options;
   printer_options = Printer_config.empty_options;
 }

@@ -16,8 +16,8 @@ module Printer_config : sig
 end
 
 type t = {
-  default_reader  : string sexp_option;
-  default_printer : string sexp_option;
+  reader          : string sexp_option;
+  printer         : string sexp_option;
   reader_options  : Reader_config.options;
   printer_options : Printer_config.options;
 } [@@deriving sexp]

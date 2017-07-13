@@ -70,7 +70,7 @@ let readers =
 let create_read_from_channel config name opts_sexp =
   let open Config in
   let resolved_name = Option.value ~default:"table"
-      (Option.first_some name config.default_reader)
+      (Option.first_some name config.reader)
   in
   match Map.find readers resolved_name with
   | None -> die (
@@ -110,7 +110,7 @@ let printers =
 let create_print_to_channel config name opts_sexp =
   let open Config in
   let resolved_name = Option.value ~default:"table"
-      (Option.first_some name config.default_printer)
+      (Option.first_some name config.printer)
   in
   match Map.find printers resolved_name with
   | None -> die (
