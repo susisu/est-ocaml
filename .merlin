@@ -4,3 +4,4 @@ PKG core
 PKG menhirlib
 PKG re2
 FLG -ppx 'ppx-jane -as-ppx'
+FLG -w A-4-9-33-40-41-42-43-34-44
