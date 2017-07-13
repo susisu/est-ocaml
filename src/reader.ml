@@ -1,13 +1,58 @@
 open Core
 
 module type Reader_intf = sig
-  type options
-  val default_options : options
-  val options_of_sexp : Sexplib.Sexp.t -> options
-  val read_from_channel : options -> int -> In_channel.t -> Eval.Context.t
+  module Config : sig
+    type options
+    type t
+    val options_of_sexp : Sexp.t -> options
+    val empty_options : options
+    val merge_options : options -> options -> options
+    val of_options : default:t -> options -> t
+  end
+
+  val default_config : Config.t
+  val read_from_channel : Config.t -> int -> In_channel.t -> Eval.Context.t
 end
 
 exception Read_error of string
+
+
+module Table_config = struct
+  type options = {
+    strict   : bool sexp_option;
+    separator: char list sexp_option;
+    default  : float sexp_option;
+    transpose: bool sexp_option;
+  } [@@deriving sexp]
+
+  type t = {
+    strict   : bool;
+    separator: char list;
+    default  : float;
+    transpose: bool;
+  }
+
+  let empty_options : options = {
+    strict    = None;
+    separator = None;
+    default   = None;
+    transpose = None;
+  }
+
+  let merge_options (opt1 : options) (opt2 : options) : options = {
+    strict    = Option.first_some opt2.strict opt1.strict;
+    separator = Option.first_some opt2.separator opt1.separator;
+    default   = Option.first_some opt2.default opt1.default;
+    transpose = Option.first_some opt2.transpose opt1.transpose;
+  }
+
+  let of_options ~default (opt : options) = {
+    strict    = Option.value ~default:default.strict opt.strict;
+    separator = Option.value ~default:default.separator opt.separator;
+    default   = Option.value ~default:default.default opt.default;
+    transpose = Option.value ~default:default.transpose opt.transpose;
+  }
+end
 
 
 let split_words sep str = String.split_on_chars ~on:sep str
@@ -51,36 +96,26 @@ let create_ctx_alist id table =
   ctx_alist'
 
 
-module Table_options = struct
-  type t = {
-    strict   : bool      [@default true];
-    separator: char list [@default [' '; '\t']];
-    default  : float     [@default Float.nan];
-    transpose: bool      [@default false];
-  } [@@deriving sexp]
-end
-
-
 module Table = struct
-  type options = Table_options.t
-  let default_options = Table_options.({
+  module Config = Table_config
+
+  let default_config = Config.({
       strict    = true;
       separator = [' '; '\t'];
       default   = Float.nan;
       transpose = false;
     })
-  let options_of_sexp = Table_options.t_of_sexp
 
   let remove_comments lines =
     List.filter lines ~f:(fun line -> String.prefix line 1 <> "#")
 
-  let read_from_channel opts id ch =
+  let read_from_channel config id ch =
     let {
-      Table_options.strict;
-      Table_options.separator = sep;
-      Table_options.default;
-      Table_options.transpose = trans;
-    } = opts in
+      Config.strict;
+      Config.separator = sep;
+      Config.default;
+      Config.transpose = trans;
+    } = config in
     let transpose = if trans then Fn.id else Array.transpose_exn in
     let table = In_channel.input_lines ch
                 |> List.filter ~f:(fun line -> line <> "")
@@ -94,15 +129,15 @@ module Table = struct
 end
 
 
-module Table_extended = struct
-  type options = Table_options.t
-  let default_options = Table_options.({
+module Table_ex = struct
+  module Config = Table_config
+
+  let default_config = Config.({
       strict    = true;
       separator = [' '; '\t'];
       default   = Float.nan;
       transpose = false;
     })
-  let options_of_sexp = Table_options.t_of_sexp
 
   let valid_name_re = Re2.Regex.create_exn "^[A-Za-z\\$][A-Za-z0-9\\$_']*$"
   let valid_name name = Re2.Regex.matches valid_name_re name
@@ -126,13 +161,13 @@ module Table_extended = struct
         end
       )
 
-  let read_from_channel opts id ch =
+  let read_from_channel config id ch =
     let {
-      Table_options.strict;
-      Table_options.separator = sep;
-      Table_options.default;
-      Table_options.transpose = trans;
-    } = opts in
+      Config.strict;
+      Config.separator = sep;
+      Config.default;
+      Config.transpose = trans;
+    } = config in
     let transpose = if trans then Fn.id else Array.transpose_exn in
     let consts = Hashtbl.create ~hashable:String.hashable () in
     let table = In_channel.input_lines ch

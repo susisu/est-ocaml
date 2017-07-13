@@ -1,35 +1,74 @@
 open Core
 
 module type Printer_intf = sig
-  type options
-  val default_options : options
-  val options_of_sexp : Sexplib.Sexp.t -> options
-  val print_to_channel : options -> Out_channel.t -> Value.t -> unit
+  module Config : sig
+    type options
+    type t
+    val options_of_sexp : Sexp.t -> options
+    val empty_options : options
+    val merge_options : options -> options -> options
+    val of_options : default:t -> options -> t
+  end
+
+  val default_config : Config.t
+  val print_to_channel : Config.t -> Out_channel.t -> Value.t -> unit
 end
 
 exception Print_error of string
 
 
-module Table_options = struct
-  type t = {
-    strict   : bool   [@default true];
-    separator: string [@default "\t"];
-    precision: int    [@default 8];
-    default  : float  [@default Float.nan];
-    transpose: bool   [@default false];
+module Table_config = struct
+  type options = {
+    strict   : bool sexp_option;
+    separator: string sexp_option;
+    precision: int sexp_option;
+    default  : float sexp_option;
+    transpose: bool sexp_option;
   } [@@deriving sexp]
+
+  type t = {
+    strict   : bool;
+    separator: string;
+    precision: int;
+    default  : float;
+    transpose: bool;
+  }
+
+  let empty_options : options = {
+    strict    = None;
+    separator = None;
+    precision = None;
+    default   = None;
+    transpose = None;
+  }
+
+  let merge_options (opt1 : options) (opt2 : options) : options = {
+    strict    = Option.first_some opt2.strict opt1.strict;
+    separator = Option.first_some opt2.separator opt1.separator;
+    precision = Option.first_some opt2.precision opt1.precision;
+    default   = Option.first_some opt2.default opt1.default;
+    transpose = Option.first_some opt2.transpose opt1.transpose;
+  }
+
+  let of_options ~default (opt : options) = {
+    strict    = Option.value ~default:default.strict opt.strict;
+    separator = Option.value ~default:default.separator opt.separator;
+    precision = Option.value ~default:default.precision opt.precision;
+    default   = Option.value ~default:default.default opt.default;
+    transpose = Option.value ~default:default.transpose opt.transpose;
+  }
 end
 
 module Table = struct
-  type options = Table_options.t
-  let default_options = Table_options.({
+  module Config = Table_config
+
+  let default_config = Config.({
       strict    = true;
       separator = "\t";
       precision = 8;
       default   = Float.nan;
       transpose = false;
     })
-  let options_of_sexp = Table_options.t_of_sexp
 
   let rec rank = function
     | Value.Num _ | Value.Fun _ -> 0
@@ -90,14 +129,14 @@ module Table = struct
           String.concat_array ~sep line_arr |> print_endline_to_channel ch
         done
 
-  let print_to_channel opts ch v =
+  let print_to_channel config ch v =
     let {
-      Table_options.strict;
-      Table_options.separator = sep;
-      Table_options.precision = prec;
-      Table_options.default;
-      Table_options.transpose = trans;
-    } = opts in
+      Config.strict;
+      Config.separator = sep;
+      Config.precision = prec;
+      Config.default;
+      Config.transpose = trans;
+    } = config in
     match rank v with
     | 0 -> print_rank0 prec ch v
     | 1 -> print_rank1 sep prec trans ch v
