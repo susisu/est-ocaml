@@ -144,18 +144,23 @@ module Table_ex = struct
 
   let read_const consts strict default str =
     match split_words [' '; '\t'] str with
-    | [name; value] ->
-      if valid_name name then
+    | name :: value :: rest ->
+      if strict && List.length rest <> 0 then
+        raise (Read_error ("invalid constant definition: " ^ str));
+      let valid = valid_name name in
+      if strict && not valid then
+        raise (Read_error ("invalid name: " ^ name));
+      if valid then
         Hashtbl.set consts ~key:name ~data:(read_num strict default value)
-      else if strict then
-        raise (Read_error ("invalid name: " ^ name))
-    | _ -> ()
+    | _ ->
+      if strict then
+        raise (Read_error ("invalid constant definition: " ^ str))
 
   let read_and_remove_comments consts strict default lines =
     List.filter lines ~f:(fun line ->
         if String.prefix line 1 <> "#" then true
         else begin
-          if String.prefix line 2 = "##" then
+          if String.prefix line 2 = "##" && String.prefix line 3 <> "###" then
             read_const consts strict default (String.drop_prefix line 2);
           false
         end
