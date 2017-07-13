@@ -27,7 +27,6 @@ let parse_program prog =
   try loop_handle succeed fail suppiler checkpoint with
   | Lexer.Lex_error (pos, msg) -> die_error ("parse error at" ^ pos) msg
 
-
 let read_data read_from_channel id file =
   try match file with
     | "-" -> read_from_channel id In_channel.stdin
@@ -36,71 +35,117 @@ let read_data read_from_channel id file =
   | Sys_error msg -> die msg
   | Reader.Read_error msg -> die_error "read error" msg
 
-
 let eval_term ctx term =
   let module E = Eval.Make_eval(Common.Position) in
   try E.eval ctx term with
   | Eval.Runtime_error (Some pos, msg) -> die_error ("runtime error at " ^ pos) msg
   | Eval.Runtime_error (None, msg) -> die_error "runtime error" msg
 
-
 let print_value print_to_channel value =
   try print_to_channel Out_channel.stdout value with
   | Printer.Print_error msg -> die_error "print error" msg
 
 
+module type Reader_entry = sig
+  module R : Reader.Reader_intf
+  val get_options : Config.Reader_config.options -> R.Config.options
+end
+
 let readers =
   let open Reader in
+  let open Config.Reader_config in
   String.Map.of_alist_reduce ~f:(fun _ x -> x) [
-    ("table",    (module Table : Reader_intf));
-    ("table_ex", (module Table_extended : Reader_intf))
+    ("table",
+     (module struct
+       module R = Table
+       let get_options config = config.table
+     end : Reader_entry));
+    ("table_ex",
+     (module struct
+       module R = Table_ex
+       let get_options config = config.table_ex
+     end : Reader_entry));
   ]
 
-let create_read_from_channel name opts =
-  match Map.find readers name with
+let create_read_from_channel config name opts_sexp =
+  let open Config in
+  let resolved_name = Option.value ~default:"table"
+      (Option.first_some name config.default_reader)
+  in
+  match Map.find readers resolved_name with
   | None -> die (
-      "unknown reader name: " ^ name ^ "\n" ^
+      "unknown reader name: " ^ resolved_name ^ "\n" ^
       "see -list-readers for the available reader names"
     )
-  | Some reader ->
-    let module R = (val reader) in
-    let opts' = match opts with
-      | None -> R.default_options
-      | Some s -> try R.options_of_sexp s with
-        | e -> die ("ill-formed reader option:\n" ^ Exn.to_string e)
+  | Some entry ->
+    let module Entry = (val entry) in
+    let module R = Entry.R in
+    let opts = match opts_sexp with
+      | None -> Entry.get_options config.reader_options
+      | Some s ->
+        let opts' = try R.Config.options_of_sexp s with
+          | e -> die ("error on reading reader option:\n" ^ Exn.to_string e)
+        in
+        R.Config.merge_options (Entry.get_options config.reader_options) opts'
     in
-    R.read_from_channel opts'
+    R.read_from_channel (R.Config.of_options opts ~default:R.default_config)
+
+
+module type Printer_entry = sig
+  module P : Printer.Printer_intf
+  val get_options : Config.Printer_config.options -> P.Config.options
+end
 
 let printers =
   let open Printer in
+  let open Config.Printer_config in
   String.Map.of_alist_reduce ~f:(fun _ x -> x) [
-    ("table", (module Table : Printer_intf));
+    ("table",
+     (module struct
+       module P = Table
+       let get_options config = config.table
+     end : Printer_entry));
   ]
 
-let create_print_to_channel name opts =
-  match Map.find printers name with
+let create_print_to_channel config name opts_sexp =
+  let open Config in
+  let resolved_name = Option.value ~default:"table"
+      (Option.first_some name config.default_printer)
+  in
+  match Map.find printers resolved_name with
   | None -> die (
-      "unknown printer name: " ^ name ^ "\n" ^
+      "unknown printer name: " ^ resolved_name ^ "\n" ^
       "see -list-printers for the available printer names"
     )
-  | Some printer ->
-    let module P = (val printer) in
-    let opts' = match opts with
-      | None -> P.default_options
-      | Some s -> try P.options_of_sexp s with
-        | e -> die ("ill-formed printer option:\n" ^ Exn.to_string e)
+  | Some entry ->
+    let module Entry = (val entry) in
+    let module P = Entry.P in
+    let opts = match opts_sexp with
+      | None -> Entry.get_options config.printer_options
+      | Some s ->
+        let opts' = try P.Config.options_of_sexp s with
+          | e -> die ("error on reading printer option:\n" ^ Exn.to_string e)
+        in
+        P.Config.merge_options (Entry.get_options config.printer_options) opts'
     in
-    P.print_to_channel opts'
+    P.print_to_channel (P.Config.of_options opts ~default:P.default_config)
+
 
 let print_list list = List.iter list ~f:(fun item -> print_endline item)
-
 let list_readers () = Map.keys readers |> print_list
-
 let list_printers () = Map.keys printers |> print_list
 
+
+let read_config file =
+  try Sexp.load_sexp_conv_exn file Config.t_of_sexp with
+  | Sys_error _ -> Config.default
+  | e -> die ("error on reading config file \"" ^ file ^ "\":\n" ^ (Exn.to_string e))
+
 let main r_name r_opts p_name p_opts prog files () =
-  let read_from_channel = create_read_from_channel r_name r_opts in
-  let print_to_channel = create_print_to_channel p_name p_opts in
+  let config_file = Filename.concat (Sys.home_directory ()) ".estconfig" in
+  let config = read_config config_file in
+  let read_from_channel = create_read_from_channel config r_name r_opts in
+  let print_to_channel = create_print_to_channel config p_name p_opts in
   let ctx = List.mapi files ~f:(read_data read_from_channel)
             |> List.fold_left ~init:Lib.std ~f:Eval.Context.append in
   parse_program prog
@@ -119,14 +164,14 @@ let spec =
   +> flag "-list-printers" (no_arg_abort ~exit:(fun () -> list_printers (); exit 0))
     ~doc:"print list of the available printers"
     ~aliases:["-ls-p"; "-ls-printers"]
-  +> flag "-reader" (optional_with_default "table" string)
-    ~doc:"NAME specify reader (default: table)"
+  +> flag "-reader" (optional string)
+    ~doc:"NAME specify reader"
     ~aliases:["-r"]
   +> flag "-reader-options" (optional sexp)
     ~doc:"SEXP specify reader options"
     ~aliases:["-ro"]
-  +> flag "-printer" (optional_with_default "table" string)
-    ~doc:"NAME specify printer (default: table)"
+  +> flag "-printer" (optional string)
+    ~doc:"NAME specify printer"
     ~aliases:["-p"]
   +> flag "-printer-options" (optional sexp)
     ~doc:"SEXP specify printer options"
