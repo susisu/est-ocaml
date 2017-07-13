@@ -49,6 +49,7 @@ let print_value print_to_channel value =
 module type Reader_entry = sig
   module R : Reader.Reader_intf
   val get_options : Config.Reader_config.options -> R.Config.options
+  val default_config : R.Config.t
 end
 
 let readers =
@@ -59,11 +60,23 @@ let readers =
      (module struct
        module R = Table
        let get_options config = config.table
+       let default_config = R.Config.({
+           strict    = true;
+           separator = [' '; '\t'];
+           default   = Float.nan;
+           transpose = false;
+         })
      end : Reader_entry));
     ("table_ex",
      (module struct
        module R = Table_ex
        let get_options config = config.table_ex
+       let default_config = R.Config.({
+           strict    = true;
+           separator = [' '; '\t'];
+           default   = Float.nan;
+           transpose = false;
+         })
      end : Reader_entry));
   ]
 
@@ -88,12 +101,13 @@ let create_read_from_channel config name opts_sexp =
         in
         R.Config.merge_options (Entry.get_options config.reader_options) opts'
     in
-    R.read_from_channel (R.Config.of_options opts ~default:R.default_config)
+    R.read_from_channel (R.Config.of_options opts ~default:Entry.default_config)
 
 
 module type Printer_entry = sig
   module P : Printer.Printer_intf
   val get_options : Config.Printer_config.options -> P.Config.options
+  val default_config : P.Config.t
 end
 
 let printers =
@@ -104,6 +118,13 @@ let printers =
      (module struct
        module P = Table
        let get_options config = config.table
+       let default_config = P.Config.({
+           strict    = true;
+           separator = "\t";
+           precision = 8;
+           default   = Float.nan;
+           transpose = false;
+         })
      end : Printer_entry));
   ]
 
@@ -128,7 +149,7 @@ let create_print_to_channel config name opts_sexp =
         in
         P.Config.merge_options (Entry.get_options config.printer_options) opts'
     in
-    P.print_to_channel (P.Config.of_options opts ~default:P.default_config)
+    P.print_to_channel (P.Config.of_options opts ~default:Entry.default_config)
 
 
 let print_list list = List.iter list ~f:(fun item -> print_endline item)

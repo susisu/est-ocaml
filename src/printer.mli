@@ -10,7 +10,6 @@ module type Printer_intf = sig
     val of_options : default:t -> options -> t
   end
 
-  val default_config : Config.t
   val print_to_channel : Config.t -> Out_channel.t -> Value.t -> unit
 end
 

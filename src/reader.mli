@@ -10,7 +10,6 @@ module type Reader_intf = sig
     val of_options : default:t -> options -> t
   end
 
-  val default_config : Config.t
   val read_from_channel : Config.t -> int -> In_channel.t -> Eval.Context.t
 end
 

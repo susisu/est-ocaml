@@ -10,7 +10,6 @@ module type Printer_intf = sig
     val of_options : default:t -> options -> t
   end
 
-  val default_config : Config.t
   val print_to_channel : Config.t -> Out_channel.t -> Value.t -> unit
 end
 
@@ -61,14 +60,6 @@ end
 
 module Table = struct
   module Config = Table_config
-
-  let default_config = Config.({
-      strict    = true;
-      separator = "\t";
-      precision = 8;
-      default   = Float.nan;
-      transpose = false;
-    })
 
   let rec rank = function
     | Value.Num _ | Value.Fun _ -> 0

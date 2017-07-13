@@ -10,7 +10,6 @@ module type Reader_intf = sig
     val of_options : default:t -> options -> t
   end
 
-  val default_config : Config.t
   val read_from_channel : Config.t -> int -> In_channel.t -> Eval.Context.t
 end
 
@@ -99,13 +98,6 @@ let create_ctx_alist id table =
 module Table = struct
   module Config = Table_config
 
-  let default_config = Config.({
-      strict    = true;
-      separator = [' '; '\t'];
-      default   = Float.nan;
-      transpose = false;
-    })
-
   let remove_comments lines =
     List.filter lines ~f:(fun line -> String.prefix line 1 <> "#")
 
@@ -131,13 +123,6 @@ end
 
 module Table_ex = struct
   module Config = Table_config
-
-  let default_config = Config.({
-      strict    = true;
-      separator = [' '; '\t'];
-      default   = Float.nan;
-      transpose = false;
-    })
 
   let valid_name_re = Re2.Regex.create_exn "^[A-Za-z\\$][A-Za-z0-9\\$_']*$"
   let valid_name name = Re2.Regex.matches valid_name_re name
