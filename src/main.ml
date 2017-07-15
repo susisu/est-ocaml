@@ -157,14 +157,15 @@ let list_readers () = Map.keys readers |> print_list
 let list_printers () = Map.keys printers |> print_list
 
 
-let read_config file =
-  try Sexp.load_sexp_conv_exn file Config.t_of_sexp with
-  | Sys_error _ -> Config.default
-  | e -> die ("error on reading config file \"" ^ file ^ "\":\n" ^ (Exn.to_string e))
+let load_config file =
+  match Sys.is_file file with
+  | `No | `Unknown -> Config.default
+  | `Yes -> try Sexp.load_sexp_conv_exn file Config.t_of_sexp with
+    | e -> die ("error on reading config file \"" ^ file ^ "\":\n" ^ (Exn.to_string e))
 
 let main r_name r_opts p_name p_opts prog files () =
   let config_file = Filename.concat (Sys.home_directory ()) ".estconfig" in
-  let config = read_config config_file in
+  let config = load_config config_file in
   let read_from_channel = create_read_from_channel config r_name r_opts in
   let print_to_channel = create_print_to_channel config p_name p_opts in
   let ctx = List.mapi files ~f:(read_data read_from_channel)
