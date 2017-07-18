@@ -176,27 +176,26 @@ module A = struct
 
   let avg vec = sum vec /. Float.of_int (Array.length vec)
 
-  let var vec =
+  let square_sum vec =
     let len = Array.length vec in
     if len = 0 then Float.nan
     else
       let mean = avg vec in
-      let z =
-        Array.fold vec
-          ~init:(0.0, 0.0)
-          ~f:(fun (s, c) x ->
-              let y = (x -. mean) *. (x -. mean) -. c in
-              let t = s +. y in
-              (t, (t -. s) -. y)
-            )
-        |> fst
-      in
-      z /. Float.of_int (len - 1)
+      Array.fold vec
+        ~init:(0.0, 0.0)
+        ~f:(fun (s, c) x ->
+            let y = (x -. mean) *. (x -. mean) -. c in
+            let t = s +. y in
+            (t, (t -. s) -. y)
+          )
+      |> fst
+
+  let var vec = square_sum vec /. Float.of_int (Array.length vec - 1)
 
   let stddev vec = Float.sqrt (var vec)
   let stderr vec = Float.sqrt (var vec /. Float.of_int (Array.length vec))
 
-  let cov vec1 vec2 =
+  let square_sum2 vec1 vec2 =
     let len1 = Array.length vec1 in
     let len2 = Array.length vec2 in
     if len1 <> len2 then raise_runtime_error "operating on vectors with unequal lengths"
@@ -204,17 +203,18 @@ module A = struct
     else
       let mean1 = avg vec1 in
       let mean2 = avg vec2 in
-      let z =
-        Array.fold2_exn vec1 vec2
-          ~init:(0.0, 0.0)
-          ~f:(fun (s, c) x1 x2 ->
-              let y = (x1 -. mean1) *. (x2 -. mean2) -. c in
-              let t = s +. y in
-              (t, (t -. s) -. y)
-            )
-        |> fst
-      in
-      z /. Float.of_int (len1 - 1)
+      Array.fold2_exn vec1 vec2
+        ~init:(0.0, 0.0)
+        ~f:(fun (s, c) x1 x2 ->
+            let y = (x1 -. mean1) *. (x2 -. mean2) -. c in
+            let t = s +. y in
+            (t, (t -. s) -. y)
+          )
+      |> fst
+
+  let cov vec1 vec2 = square_sum2 vec1 vec2 /. Float.of_int (Array.length vec1 - 1)
+
+  let cor vec1 vec2 = square_sum2 vec1 vec2 /. (sqrt (square_sum vec1) *. sqrt (square_sum vec2))
 
   let v_sum    = make_accum_op sum
   let v_prod   = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
@@ -223,6 +223,7 @@ module A = struct
   let v_stddev = make_accum_op stddev
   let v_stderr = make_accum_op stderr
   let v_cov    = make_accum_op2 cov
+  let v_cor    = make_accum_op2 cor
 end
 
 
@@ -283,4 +284,5 @@ let std = Eval.Context.of_alist [
     ("stddev", A.v_stddev);
     ("stderr", A.v_stderr);
     ("cov"   , A.v_cov);
+    ("cor"   , A.v_cor);
   ]

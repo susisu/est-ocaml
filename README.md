@@ -245,6 +245,7 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `stddev` | vector → number           | standard deviation                         |
 | `stderr` | vector → number           | standard error                             |
 | `cov`    | vector → vector → number | covariance                                 |
+| `cor`    | vector → vector → number | correlation coefficient                    |
 
 The mathematical functions which takes numbers also accept number vectors.
 For example, `sign [2, -3, 0]` produces `[1, -1, 0]`.
