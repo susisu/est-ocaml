@@ -192,8 +192,8 @@ module A = struct
 
   let var vec = square_sum vec /. Float.of_int (Array.length vec - 1)
 
-  let stddev vec = Float.sqrt (var vec)
-  let stderr vec = Float.sqrt (var vec /. Float.of_int (Array.length vec))
+  let sd vec = Float.sqrt (var vec)
+  let se vec = Float.sqrt (var vec /. Float.of_int (Array.length vec))
 
   let square_sum2 vec1 vec2 =
     let len1 = Array.length vec1 in
@@ -216,14 +216,14 @@ module A = struct
 
   let cor vec1 vec2 = square_sum2 vec1 vec2 /. (sqrt (square_sum vec1) *. sqrt (square_sum vec2))
 
-  let v_sum    = make_accum_op sum
-  let v_prod   = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
-  let v_avg    = make_accum_op avg
-  let v_var    = make_accum_op var
-  let v_stddev = make_accum_op stddev
-  let v_stderr = make_accum_op stderr
-  let v_cov    = make_accum_op2 cov
-  let v_cor    = make_accum_op2 cor
+  let v_sum  = make_accum_op sum
+  let v_prod = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
+  let v_avg  = make_accum_op avg
+  let v_var  = make_accum_op var
+  let v_sd   = make_accum_op sd
+  let v_se   = make_accum_op se
+  let v_cov  = make_accum_op2 cov
+  let v_cor  = make_accum_op2 cor
 end
 
 
@@ -277,12 +277,12 @@ let std = Eval.Context.of_alist [
     ("fst", V.v_fst);
     ("_@_", V.v_append);
 
-    ("sum"   , A.v_sum);
-    ("prod"  , A.v_prod);
-    ("avg"   , A.v_avg);
-    ("var"   , A.v_var);
-    ("stddev", A.v_stddev);
-    ("stderr", A.v_stderr);
-    ("cov"   , A.v_cov);
-    ("cor"   , A.v_cor);
+    ("sum" , A.v_sum);
+    ("prod", A.v_prod);
+    ("avg" , A.v_avg);
+    ("var" , A.v_var);
+    ("sd"  , A.v_sd);
+    ("se"  , A.v_se);
+    ("cov" , A.v_cov);
+    ("cor" , A.v_cor);
   ]
