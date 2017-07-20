@@ -211,41 +211,41 @@ The precedence of the operators (and application) is as follows.
 This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 
 #### Functions
-|  name   |            type            |                description                 |
-| ------- | -------------------------- | ------------------------------------------ |
-| `sign`  | number → number           | sign of a number (`+1`, `-1` or `0`)       |
-| `abs`   | number → number           | absolute value                             |
-| `round` | number → number           | round to nearest                           |
-| `floor` | number → number           | round down                                 |
-| `ceil`  | number → number           | round up                                   |
-| `sqrt`  | number → number           | square root                                |
-| `exp`   | number → number           | exponential function                       |
-| `expm1` | number → number           | `expm1 x` = `exp x - 1` but more precise   |
-| `log`   | number → number           | natural logarithm                          |
-| `log1p` | number → number           | `log1p x` = `log (1 + x)` but more precise |
-| `log2`  | number → number           | Base 2 logarithm                           |
-| `log10` | number → number           | Base 10 logarithm                          |
-| `sin`   | number → number           | sine                                       |
-| `cos`   | number → number           | cosine                                     |
-| `tan`   | number → number           | tangent                                    |
-| `asin`  | number → number           | arcsine (-pi/2 to pi/2)                    |
-| `acos`  | number → number           | arccosine (0 to pi)                        |
-| `atan`  | number → number           | arctangent (-pi/2 to pi/2)                 |
-| `sinh`  | number → number           | hyperbolic sine                            |
-| `cosh`  | number → number           | hyperbolic cosine                          |
-| `tanh`  | number → number           | hyperbolic tangent                         |
-| `log_`  | number → number → number | `log_ b a` = base b logarithm of a         |
-| `atan2` | number → number → number | `atan y x` = arctangent of y/x (-pi to pi) |
-| `len`   | vector → number           | vector length                              |
-| `fst`   | vector → *                | first component of a vector                |
-| `sum`   | vector → number           | sum of a number vector                     |
-| `prod`  | vector → number           | product of a number vector                 |
-| `avg`   | vector → number           | average                                    |
-| `var`   | vector → number           | variance                                   |
-| `sd`    | vector → number           | standard deviation                         |
-| `se`    | vector → number           | standard error                             |
-| `cov`   | vector → vector → number | covariance                                 |
-| `cor`   | vector → vector → number | correlation coefficient                    |
+|  name   |            type            |                 description                 |
+| ------- | -------------------------- | ------------------------------------------- |
+| `sign`  | number → number           | sign of a number (`+1`, `-1` or `0`)        |
+| `abs`   | number → number           | absolute value                              |
+| `round` | number → number           | round to nearest                            |
+| `floor` | number → number           | round down                                  |
+| `ceil`  | number → number           | round up                                    |
+| `sqrt`  | number → number           | square root                                 |
+| `exp`   | number → number           | exponential function                        |
+| `expm1` | number → number           | `expm1 x` = `exp x - 1` but more precise    |
+| `log`   | number → number           | natural logarithm                           |
+| `log1p` | number → number           | `log1p x` = `log (1 + x)` but more precise  |
+| `log2`  | number → number           | Base 2 logarithm                            |
+| `log10` | number → number           | Base 10 logarithm                           |
+| `sin`   | number → number           | sine                                        |
+| `cos`   | number → number           | cosine                                      |
+| `tan`   | number → number           | tangent                                     |
+| `asin`  | number → number           | arcsine (-pi/2 to pi/2)                     |
+| `acos`  | number → number           | arccosine (0 to pi)                         |
+| `atan`  | number → number           | arctangent (-pi/2 to pi/2)                  |
+| `sinh`  | number → number           | hyperbolic sine                             |
+| `cosh`  | number → number           | hyperbolic cosine                           |
+| `tanh`  | number → number           | hyperbolic tangent                          |
+| `log_`  | number → number → number | `log_ b a` = base b logarithm of a          |
+| `atan2` | number → number → number | `atan2 y x` = arctangent of y/x (-pi to pi) |
+| `len`   | vector → number           | vector length                               |
+| `fst`   | vector → *                | first component of a vector                 |
+| `sum`   | vector → number           | sum of a number vector                      |
+| `prod`  | vector → number           | product of a number vector                  |
+| `avg`   | vector → number           | average                                     |
+| `var`   | vector → number           | variance                                    |
+| `sd`    | vector → number           | standard deviation                          |
+| `se`    | vector → number           | standard error                              |
+| `cov`   | vector → vector → number | covariance                                  |
+| `cor`   | vector → vector → number | Pearson correlation coefficient             |
 
 The mathematical functions which takes numbers also accept number vectors.
 For example, `sign [2, -3, 0]` produces `[1, -1, 0]`.
