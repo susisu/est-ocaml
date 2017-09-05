@@ -218,6 +218,8 @@ module A = struct
 
   let v_sum  = make_accum_op sum
   let v_prod = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
+  let v_max  = make_accum_op (Array.fold ~init:(-.Float.infinity) ~f:Float.max)
+  let v_min  = make_accum_op (Array.fold ~init:Float.infinity ~f:Float.min)
   let v_avg  = make_accum_op avg
   let v_var  = make_accum_op var
   let v_sd   = make_accum_op sd
@@ -279,6 +281,8 @@ let std = Eval.Context.of_alist [
 
     ("sum" , A.v_sum);
     ("prod", A.v_prod);
+    ("max" , A.v_max);
+    ("min" , A.v_min);
     ("avg" , A.v_avg);
     ("var" , A.v_var);
     ("sd"  , A.v_sd);
