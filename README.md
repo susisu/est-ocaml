@@ -58,7 +58,7 @@ For program's syntax and language features, see [Language](#language).
 If `-` is given for a file, it will read data from the standard input.
 
 ### Flags
-|          name           |         aliases         |             description              |
+| name                    | aliases                 | description                          |
 | ----------------------- | ----------------------- | ------------------------------------ |
 | `-help`                 | `-?`                    | print help text                      |
 | `-reader NAME`          | `-r`                    | specify reader                       |
@@ -168,7 +168,7 @@ Values in a vector can have any type and can be different to each other.
 In the tables below, `*` is used to describe an unknown type, which can be any one of the three types.
 
 #### Predefined constants
-|   name    |  type  |           description            |
+| name      | type   | description                      |
 | --------- | ------ | -------------------------------- |
 | `pi`      | number | pi (= 3.14159...)                |
 | `e`       | number | Napier's constant (= 2.71828...) |
@@ -180,7 +180,7 @@ In the tables below, `*` is used to describe an unknown type, which can be any o
 | `sqrt1_2` | number | square root of 1/2               |
 
 #### Operators
-| arity  | name |            type            |     description      | associativity |
+| arity  | name | type                       | description          | associativity |
 | ------ | ---- | -------------------------- | -------------------- | ------------- |
 | unary  | `+`  | number → number           |                      |               |
 | unary  | `-`  | number → number           |                      |               |
@@ -238,6 +238,8 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `atan2` | number → number → number | `atan2 y x` = arctangent of y/x (-pi to pi)        |
 | `len`   | vector → number           | vector length                                      |
 | `fst`   | vector → *                | first component of a vector                        |
+| `take`  | number → vector → vector | take first n components of a vector                |
+| `drop`  | number → vector → vector | drop first n components of a vector                |
 | `sum`   | vector → number           | sum of a number vector                             |
 | `prod`  | vector → number           | product of a number vector                         |
 | `max`   | vector → number           | maximum value in a number vector (`-inf` if empty) |

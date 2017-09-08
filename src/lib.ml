@@ -143,6 +143,40 @@ module V = struct
         )
       | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
     )
+
+  let v_take = Fun (function
+      | Num num -> Fun (function
+          | Vec vec ->
+            begin
+              match Float.iround_down num with
+              | Some n ->
+                let len = Array.length vec in
+                if n <= 0 then Vec [||]
+                else if n > len then Vec vec
+                else Vec (Array.slice vec 0 n)
+              | None -> raise_runtime_error ("invalid number: " ^ Float.to_string num)
+            end
+          | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
+        )
+      | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
+    )
+
+  let v_drop = Fun (function
+      | Num num -> Fun (function
+          | Vec vec ->
+            begin
+              match Float.iround_down num with
+              | Some n ->
+                let len = Array.length vec in
+                if n <= 0 then Vec vec
+                else if n > len then Vec [||]
+                else Vec (Array.slice vec n len)
+              | None -> raise_runtime_error ("invalid number: " ^ Float.to_string num)
+            end
+          | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
+        )
+      | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
+    )
 end
 
 
@@ -274,10 +308,12 @@ let std = Eval.Context.of_alist [
     ("log_" , B.v_log_);
     ("atan2", B.v_atan2);
 
-    ("_!_", V.v_at);
-    ("len", V.v_len);
-    ("fst", V.v_fst);
-    ("_@_", V.v_append);
+    ("_!_" , V.v_at);
+    ("len" , V.v_len);
+    ("fst" , V.v_fst);
+    ("_@_" , V.v_append);
+    ("take", V.v_take);
+    ("drop", V.v_drop);
 
     ("sum" , A.v_sum);
     ("prod", A.v_prod);
