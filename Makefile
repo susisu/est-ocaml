@@ -5,7 +5,7 @@ MENHIR = menhir --table
 OCAMLBUILD_FLAGS = -use-ocamlfind \
 	-use-menhir -menhir "$(MENHIR)" \
 	-I src \
-	-pkg core -pkg menhirlib -pkg re2 \
+	-pkg core -pkg menhirLib -pkg re2 \
 	-tag "ppx(ppx-jane -as-ppx)" \
 	-tag thread \
 	-tag bin_annot \
@@ -30,7 +30,7 @@ clean:
 sanity:
 	mkdir -p $(TEMPDIR)
 	which ocamlbuild ocamlfind menhir
-	ocamlfind query core menhirlib re2
+	ocamlfind query core menhirLib re2
 
 
 update-parser-messages: sanity
