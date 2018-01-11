@@ -269,22 +269,22 @@ This is a template of the config file (`;` is used to comment out a line).
    ; (strict true)          ; fails if table contains an empty or invalid entry
    ; (separator (" " "\t")) ; separator(s) used to separate numbers in rows
    ; (default nan)          ; default value to fill empty or invalid entries
-   ; (transpose false))     ; if true, tables will be transposed
+   ; (transpose false)      ; if true, tables will be transposed
   ))
   (table_ex (
    ; (strict true)          ; fails if table contains an empty or invalid entry
    ; (separator (" " "\t")) ; separator(s) used to separate numbers in rows
    ; (default nan)          ; default value to fill empty or invalid entries
-   ; (transpose false))     ; if true, tables will be transposed
+   ; (transpose false)      ; if true, tables will be transposed
   ))
  ))
  (printer_options (
   (table (
-   ; (strict true)      ; fails if table contains an empty entry
-   ; (separator "\t")   ; separator used to separate numbers in rows
-   ; (precision 8)      ; maximum number of digits of output numbers
-   ; (default nan)      ; default value to fill empty entries
-   ; (transpose false)) ; if true, table will be transposed
+   ; (strict true)     ; fails if table contains an empty entry
+   ; (separator "\t")  ; separator used to separate numbers in rows
+   ; (precision 8)     ; maximum number of digits of output numbers
+   ; (default nan)     ; default value to fill empty entries
+   ; (transpose false) ; if true, table will be transposed
   ))
  ))
 )
