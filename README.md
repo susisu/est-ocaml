@@ -240,10 +240,12 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `fst`   | vector → *                | first component of a vector                        |
 | `take`  | number → vector → vector | take first n components of a vector                |
 | `drop`  | number → vector → vector | drop first n components of a vector                |
-| `sum`   | vector → number           | sum of a number vector                             |
-| `prod`  | vector → number           | product of a number vector                         |
-| `max`   | vector → number           | maximum value in a number vector (`-inf` if empty) |
-| `min`   | vector → number           | minimum value in a number vector (`inf` if empty)  |
+| `sum`   | vector → number           | sum of a vector                                    |
+| `prod`  | vector → number           | product of a vector                                |
+| `max`   | vector → number           | maximum value in a vector (`-inf` if empty)        |
+| `min`   | vector → number           | minimum value in a vector (`inf` if empty)         |
+| `maxi`  | vector → number           | index of maximum value in a vector (`-1` if empty) |
+| `mini`  | vector → number           | index of minimum value in a vector (`-1` if empty) |
 | `avg`   | vector → number           | average                                            |
 | `var`   | vector → number           | variance                                           |
 | `sd`    | vector → number           | standard deviation                                 |

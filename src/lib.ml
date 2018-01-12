@@ -224,6 +224,18 @@ module A = struct
           )
       |> fst
 
+  let maxi vec =
+    Array.foldi vec ~init:(-1, -.Float.infinity)
+      ~f:(fun i (maxi, m) x -> if x > m then (i, x) else (maxi, m))
+    |> fst
+    |> Float.of_int
+
+  let mini vec =
+    Array.foldi vec ~init:(-1, Float.infinity)
+      ~f:(fun i (mini, m) x -> if x < m then (i, x) else (mini, m))
+    |> fst
+    |> Float.of_int
+
   let var vec = square_sum vec /. Float.of_int (Array.length vec - 1)
 
   let sd vec = Float.sqrt (var vec)
@@ -254,6 +266,8 @@ module A = struct
   let v_prod = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
   let v_max  = make_accum_op (Array.fold ~init:(-.Float.infinity) ~f:Float.max)
   let v_min  = make_accum_op (Array.fold ~init:Float.infinity ~f:Float.min)
+  let v_maxi = make_accum_op maxi
+  let v_mini = make_accum_op mini
   let v_avg  = make_accum_op avg
   let v_var  = make_accum_op var
   let v_sd   = make_accum_op sd
@@ -319,6 +333,8 @@ let std = Eval.Context.of_alist [
     ("prod", A.v_prod);
     ("max" , A.v_max);
     ("min" , A.v_min);
+    ("maxi", A.v_maxi);
+    ("mini", A.v_mini);
     ("avg" , A.v_avg);
     ("var" , A.v_var);
     ("sd"  , A.v_sd);
