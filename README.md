@@ -194,7 +194,7 @@ In the tables below, `*` is used to describe an unknown type, which can be any o
 | binary | `@`  | vector → vector → vector | vector concatenation | left          |
 | binary | `!`  | vector → number → *      | index access         | left          |
 
-The arithmetic operators also accept number vectors: `[1, 2, 3] * 4` produces `[4, 8, 12]`, `[1, 2] + [3, 4]` produces `[4, 6]`, etc.
+The arithmetic operators also accept numeric vectors: `[1, 2, 3] * 4` produces `[4, 8, 12]`, `[1, 2] + [3, 4]` produces `[4, 6]`, etc.
 Note that a multiplication of two vectors does not mean inner or outer product.
 
 The precedence of the operators (and application) is as follows.
@@ -252,8 +252,10 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `se`    | vector → number           | standard error                                     |
 | `cov`   | vector → vector → number | covariance                                         |
 | `cor`   | vector → vector → number | Pearson correlation coefficient                    |
+| `asort` | vector → vector           | sort (ascending order)                             |
+| `dsort` | vector → vector           | sort (descending order)                            |
 
-The mathematical functions which takes numbers also accept number vectors.
+The mathematical functions which takes numbers also accept numeric vectors.
 For example, `sign [2, -3, 0]` produces `[1, -1, 0]`.
 
 ### Config file

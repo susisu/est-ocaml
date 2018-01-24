@@ -180,7 +180,7 @@ module V = struct
 end
 
 
-(* accumulation operators *)
+(* numeric vector operators *)
 let to_float = function
   | Value.Num num -> num
   | v -> raise_type_error ~expect:"vector" ~actual:(Value.type_string_of v)
@@ -196,8 +196,12 @@ let make_accum_op2 f =
           Value.Num (f (to_float_array v1) (to_float_array v2))
         )
     )
+let make_vec_op f =
+  Value.Fun (fun v ->
+    Value.Vec (to_float_array v |> f |> Array.map ~f:(fun n -> Value.Num n))
+  )
 
-module A = struct
+module NV = struct
   let sum vec =
     Array.fold vec
       ~init:(0.0, 0.0)
@@ -262,18 +266,20 @@ module A = struct
 
   let cor vec1 vec2 = square_sum2 vec1 vec2 /. (sqrt (square_sum vec1) *. sqrt (square_sum vec2))
 
-  let v_sum  = make_accum_op sum
-  let v_prod = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
-  let v_max  = make_accum_op (Array.fold ~init:(-.Float.infinity) ~f:Float.max)
-  let v_min  = make_accum_op (Array.fold ~init:Float.infinity ~f:Float.min)
-  let v_maxi = make_accum_op maxi
-  let v_mini = make_accum_op mini
-  let v_avg  = make_accum_op avg
-  let v_var  = make_accum_op var
-  let v_sd   = make_accum_op sd
-  let v_se   = make_accum_op se
-  let v_cov  = make_accum_op2 cov
-  let v_cor  = make_accum_op2 cor
+  let v_sum   = make_accum_op sum
+  let v_prod  = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
+  let v_max   = make_accum_op (Array.fold ~init:(-.Float.infinity) ~f:Float.max)
+  let v_min   = make_accum_op (Array.fold ~init:Float.infinity ~f:Float.min)
+  let v_maxi  = make_accum_op maxi
+  let v_mini  = make_accum_op mini
+  let v_avg   = make_accum_op avg
+  let v_var   = make_accum_op var
+  let v_sd    = make_accum_op sd
+  let v_se    = make_accum_op se
+  let v_cov   = make_accum_op2 cov
+  let v_cor   = make_accum_op2 cor
+  let v_asort = make_vec_op (Array.sorted_copy ~cmp:Float.compare)
+  let v_dsort = make_vec_op (Array.sorted_copy ~cmp:(fun a b -> - Float.compare a b))
 end
 
 
@@ -329,16 +335,18 @@ let std = Eval.Context.of_alist [
     ("take", V.v_take);
     ("drop", V.v_drop);
 
-    ("sum" , A.v_sum);
-    ("prod", A.v_prod);
-    ("max" , A.v_max);
-    ("min" , A.v_min);
-    ("maxi", A.v_maxi);
-    ("mini", A.v_mini);
-    ("avg" , A.v_avg);
-    ("var" , A.v_var);
-    ("sd"  , A.v_sd);
-    ("se"  , A.v_se);
-    ("cov" , A.v_cov);
-    ("cor" , A.v_cor);
+    ("sum"  , NV.v_sum);
+    ("prod" , NV.v_prod);
+    ("max"  , NV.v_max);
+    ("min"  , NV.v_min);
+    ("maxi" , NV.v_maxi);
+    ("mini" , NV.v_mini);
+    ("avg"  , NV.v_avg);
+    ("var"  , NV.v_var);
+    ("sd"   , NV.v_sd);
+    ("se"   , NV.v_se);
+    ("cov"  , NV.v_cov);
+    ("cor"  , NV.v_cor);
+    ("asort", NV.v_asort);
+    ("dsort", NV.v_dsort);
   ]
