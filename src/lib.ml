@@ -183,7 +183,7 @@ end
 (* numeric vector operators *)
 let to_float = function
   | Value.Num num -> num
-  | v -> raise_type_error ~expect:"vector" ~actual:(Value.type_string_of v)
+  | v -> raise_type_error ~expect:"number" ~actual:(Value.type_string_of v)
 
 let to_float_array = function
   | Value.Vec vec -> Array.map vec ~f:to_float
