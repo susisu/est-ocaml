@@ -223,8 +223,8 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `expm1` | number → number           | `expm1 x` = `exp x - 1` but more precise           |
 | `log`   | number → number           | natural logarithm                                  |
 | `log1p` | number → number           | `log1p x` = `log (1 + x)` but more precise         |
-| `log2`  | number → number           | Base 2 logarithm                                   |
-| `log10` | number → number           | Base 10 logarithm                                  |
+| `log2`  | number → number           | base 2 logarithm                                   |
+| `log10` | number → number           | base 10 logarithm                                  |
 | `sin`   | number → number           | sine                                               |
 | `cos`   | number → number           | cosine                                             |
 | `tan`   | number → number           | tangent                                            |
@@ -252,6 +252,7 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `se`    | vector → number           | standard error                                     |
 | `cov`   | vector → vector → number | covariance                                         |
 | `cor`   | vector → vector → number | Pearson correlation coefficient                    |
+| `med`   | vector → number           | median                                             |
 | `asort` | vector → vector           | sort (ascending order)                             |
 | `dsort` | vector → vector           | sort (descending order)                            |
 

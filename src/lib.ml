@@ -198,8 +198,8 @@ let make_accum_op2 f =
     )
 let make_vec_op f =
   Value.Fun (fun v ->
-    Value.Vec (to_float_array v |> f |> Array.map ~f:(fun n -> Value.Num n))
-  )
+      Value.Vec (to_float_array v |> f |> Array.map ~f:(fun n -> Value.Num n))
+    )
 
 module NV = struct
   let sum vec =
@@ -266,6 +266,39 @@ module NV = struct
 
   let cor vec1 vec2 = square_sum2 vec1 vec2 /. (sqrt (square_sum vec1) *. sqrt (square_sum vec2))
 
+  let med vec =
+    let len = Array.length vec in
+    if len = 0 then Float.nan
+    else
+      (* quickselect *)
+      let v = Array.copy vec in
+      let partition l r pivot =
+        let p = v.(pivot) in
+        Array.swap v pivot r;
+        let s = ref l in
+        for i = l to r - 1 do
+          if v.(i) <= p then begin
+            Array.swap v (!s) i;
+            s := !s + 1;
+          end
+        done;
+        Array.swap v (!s) r;
+        !s
+      in
+      let rec select k l r =
+        if l = r then v.(l)
+        else
+          let pivot = (l + r) / 2 in (* TODO: pivot selection *)
+          let i = partition l r pivot in
+          if i < k then select k (i + 1) r
+          else if i > k then select k l (i - 1)
+          else v.(k)
+      in
+      if len % 2 = 0 then
+        0.5 *. (select (len / 2 - 1) 0 (len - 1) +. select (len / 2) 0 (len - 1))
+      else
+        select ((len - 1) / 2) 0 (len - 1)
+
   let v_sum   = make_accum_op sum
   let v_prod  = make_accum_op (Array.fold ~init:1.0 ~f:( *. ))
   let v_max   = make_accum_op (Array.fold ~init:(-.Float.infinity) ~f:Float.max)
@@ -278,6 +311,7 @@ module NV = struct
   let v_se    = make_accum_op se
   let v_cov   = make_accum_op2 cov
   let v_cor   = make_accum_op2 cor
+  let v_med   = make_accum_op med
   let v_asort = make_vec_op (Array.sorted_copy ~cmp:Float.compare)
   let v_dsort = make_vec_op (Array.sorted_copy ~cmp:(fun a b -> - Float.compare a b))
 end
@@ -347,6 +381,7 @@ let std = Eval.Context.of_alist [
     ("se"   , NV.v_se);
     ("cov"  , NV.v_cov);
     ("cor"  , NV.v_cor);
+    ("med"  , NV.v_med);
     ("asort", NV.v_asort);
     ("dsort", NV.v_dsort);
   ]
