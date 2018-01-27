@@ -228,12 +228,18 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `sin`   | number → number           | sine                                               |
 | `cos`   | number → number           | cosine                                             |
 | `tan`   | number → number           | tangent                                            |
+| `cot`   | number → number           | cotangent                                          |
+| `sec`   | number → number           | secant                                             |
+| `csc`   | number → number           | cosecant                                           |
 | `asin`  | number → number           | arcsine (-pi/2 to pi/2)                            |
 | `acos`  | number → number           | arccosine (0 to pi)                                |
 | `atan`  | number → number           | arctangent (-pi/2 to pi/2)                         |
 | `sinh`  | number → number           | hyperbolic sine                                    |
 | `cosh`  | number → number           | hyperbolic cosine                                  |
 | `tanh`  | number → number           | hyperbolic tangent                                 |
+| `coth`  | number → number           | hyperbolic cotangent                               |
+| `sech`  | number → number           | hyperbolic secant                                  |
+| `csch`  | number → number           | hyperbolic cosecant                                |
 | `log_`  | number → number → number | `log_ b a` = base b logarithm of a                 |
 | `atan2` | number → number → number | `atan2 y x` = arctangent of y/x (-pi to pi)        |
 | `len`   | vector → number           | vector length                                      |

@@ -66,12 +66,18 @@ module U = struct
   let v_sin   = make_unary_op Float.sin
   let v_cos   = make_unary_op Float.cos
   let v_tan   = make_unary_op Float.tan
+  let v_cot   = make_unary_op (fun x -> 1.0 /. Float.tan x)
+  let v_sec   = make_unary_op (fun x -> 1.0 /. Float.cos x)
+  let v_csc   = make_unary_op (fun x -> 1.0 /. Float.sin x)
   let v_asin  = make_unary_op Float.asin
   let v_acos  = make_unary_op Float.acos
   let v_atan  = make_unary_op Float.atan
   let v_sinh  = make_unary_op Float.sinh
   let v_cosh  = make_unary_op Float.cosh
   let v_tanh  = make_unary_op Float.tanh
+  let v_coth  = make_unary_op (fun x -> 1.0 /. Float.tanh x)
+  let v_sech  = make_unary_op (fun x -> 1.0 /. Float.cosh x)
+  let v_csch  = make_unary_op (fun x -> 1.0 /. Float.sinh x)
 end
 
 
@@ -345,12 +351,18 @@ let std = Eval.Context.of_alist [
     ("sin"  , U.v_sin);
     ("cos"  , U.v_cos);
     ("tan"  , U.v_tan);
+    ("cot"  , U.v_cot);
+    ("sec"  , U.v_sec);
+    ("csc"  , U.v_csc);
     ("asin" , U.v_asin);
     ("acos" , U.v_acos);
     ("atan" , U.v_atan);
     ("sinh" , U.v_sinh);
     ("cosh" , U.v_cosh);
     ("tanh" , U.v_tanh);
+    ("coth" , U.v_coth);
+    ("sech" , U.v_sech);
+    ("csch" , U.v_csch);
 
     ("_+_"  , B.v_add);
     ("_-_"  , B.v_sub);
