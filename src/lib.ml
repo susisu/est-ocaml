@@ -318,8 +318,8 @@ module NV = struct
   let v_cov   = make_accum_op2 cov
   let v_cor   = make_accum_op2 cor
   let v_med   = make_accum_op med
-  let v_asort = make_vec_op (Array.sorted_copy ~cmp:Float.compare)
-  let v_dsort = make_vec_op (Array.sorted_copy ~cmp:(fun a b -> - Float.compare a b))
+  let v_asort = make_vec_op (Array.sorted_copy ~cmp:Float.ascending)
+  let v_dsort = make_vec_op (Array.sorted_copy ~cmp:Float.descending)
 end
 
 
