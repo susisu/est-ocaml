@@ -117,12 +117,28 @@ module V = struct
   let at vec index = try Array.get vec index with
     | Invalid_argument _ -> raise_runtime_error ("index out of bounds: " ^ Int.to_string index)
 
+  let atq vec index = try Array.get vec index with
+    | Invalid_argument _ -> Num Float.nan
+
   let v_at = Fun (function
       | Vec vec -> Fun (function
           | Num num ->
             begin
               match Float.iround_down num with
               | Some index -> at vec index
+              | None -> raise_runtime_error ("invalid index: " ^ Float.to_string num)
+            end
+          | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
+        )
+      | v -> raise_type_error ~expect:"vector" ~actual:(type_string_of v)
+    )
+
+  let v_atq = Fun (function
+      | Vec vec -> Fun (function
+          | Num num ->
+            begin
+              match Float.iround_down num with
+              | Some index -> atq vec index
               | None -> raise_runtime_error ("invalid index: " ^ Float.to_string num)
             end
           | v -> raise_type_error ~expect:"number" ~actual:(type_string_of v)
@@ -375,6 +391,7 @@ let std = Eval.Context.of_alist [
     ("atan2", B.v_atan2);
 
     ("_!_" , V.v_at);
+    ("_?_" , V.v_atq);
     ("len" , V.v_len);
     ("fst" , V.v_fst);
     ("_@_" , V.v_append);

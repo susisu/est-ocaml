@@ -8,7 +8,7 @@ open Term
 %token <Lexing.position> PLUS MINUS
 %token <Lexing.position> TIMES FRAC MOD
 %token <Lexing.position> POWER CARET
-%token <Lexing.position> APPEND EXCL
+%token <Lexing.position> APPEND EXCL QUE
 %token <Lexing.position> LET EQUAL IN
 %token <Lexing.position> LPAREN RPAREN
 %token <Lexing.position> EOF
@@ -18,7 +18,7 @@ open Term
 %right POWER CARET
 %left APPEND
 %nonassoc UNARY
-%left EXCL
+%left EXCL QUE
 
 %start <Lexing.position Term.t> toplevel
 
@@ -40,6 +40,7 @@ aterm:
   | t = vec                            { t }
   | LPAREN; t = term; RPAREN           { t }
   | lhs = aterm; p = EXCL; rhs = aterm { App (p, App (p, Var (p, "_!_"),  lhs), rhs) }
+  | lhs = aterm; p = QUE; rhs = aterm  { App (p, App (p, Var (p, "_?_"),  lhs), rhs) }
 
 app:
   | t = aterm               { t }

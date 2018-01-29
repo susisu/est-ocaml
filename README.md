@@ -180,27 +180,28 @@ In the tables below, `*` is used to describe an unknown type, which can be any o
 | `sqrt1_2` | number | square root of 1/2               |
 
 #### Operators
-| arity  | name | type                       | description          | associativity |
-| ------ | ---- | -------------------------- | -------------------- | ------------- |
-| unary  | `+`  | number → number           |                      |               |
-| unary  | `-`  | number → number           |                      |               |
-| binary | `+`  | number → number → number |                      | left          |
-| binary | `-`  | number → number → number |                      | left          |
-| binary | `*`  | number → number → number |                      | left          |
-| binary | `/`  | number → number → number |                      | left          |
-| binary | `%`  | number → number → number | modulo               | left          |
-| binary | `**` | number → number → number | exponentiation       | right         |
-| binary | `^`  | number → number → number | (alias for `**`)     | right         |
-| binary | `@`  | vector → vector → vector | vector concatenation | left          |
-| binary | `!`  | vector → number → *      | index access         | left          |
+| arity  | name | type                       | description                             | associativity |
+| ------ | ---- | -------------------------- | --------------------------------------- | ------------- |
+| unary  | `+`  | number → number           |                                         |               |
+| unary  | `-`  | number → number           |                                         |               |
+| binary | `+`  | number → number → number |                                         | left          |
+| binary | `-`  | number → number → number |                                         | left          |
+| binary | `*`  | number → number → number |                                         | left          |
+| binary | `/`  | number → number → number |                                         | left          |
+| binary | `%`  | number → number → number | modulo                                  | left          |
+| binary | `**` | number → number → number | exponentiation                          | right         |
+| binary | `^`  | number → number → number | (alias for `**`)                        | right         |
+| binary | `@`  | vector → vector → vector | vector concatenation                    | left          |
+| binary | `!`  | vector → number → *      | index access; raise error if not found  | left          |
+| binary | `?`  | vector → number → *      | index access; return `nan` if not found | left          |
 
 The arithmetic operators also accept numeric vectors: `[1, 2, 3] * 4` produces `[4, 8, 12]`, `[1, 2] + [3, 4]` produces `[4, 6]`, etc.
 Note that a multiplication of two vectors does not mean inner or outer product.
 
 The precedence of the operators (and application) is as follows.
-`!` has the highest precedence, and binary `+` and `-` have the lowest.
+`!` and `?` has the highest precedence, while binary `+` and `-` have the lowest.
 
-1. `!`
+1. `!` `?`
 2. application
 4. unary `+` `-`
 3. `@`

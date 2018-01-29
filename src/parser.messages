@@ -178,6 +178,15 @@ toplevel: NUM EXCL TIMES
 ## The known suffix of the stack is as follows:
 ## aterm EXCL
 ##
+toplevel: NUM QUE TIMES
+##
+## Ends in an error in state: 26.
+##
+## aterm -> aterm QUE . aterm [ TIMES RPAREN RBRACKET QUE POWER PLUS NUM MOD MINUS LPAREN LBRACKET IN ID FRAC EXCL EOF COMMA CARET APPEND ]
+##
+## The known suffix of the stack is as follows:
+## aterm QUE
+##
 
   expecting number, vector, identifier or '('
 

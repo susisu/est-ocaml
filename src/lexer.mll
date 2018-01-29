@@ -19,6 +19,7 @@ let reserved_ops = String.Map.of_alist_reduce ~f:(fun _ x -> x) [
     ("^",  fun p -> CARET p);
     ("@",  fun p -> APPEND p);
     ("!",  fun p -> EXCL p);
+    ("?",  fun p -> QUE p);
     ("=",  fun p -> EQUAL p);
   ]
 
@@ -39,7 +40,7 @@ let float    = digit+ fraction? exponent?
 
 let identifier = (letter | '$') (alpha_num | ['$' '_' '\''])*
 
-let operator = ['+' '-' '*' '/' '%' '^' '@' '!' '=']+
+let operator = ['+' '-' '*' '/' '%' '^' '@' '!' '?' '=']+
 
 rule main = parse
   | whitespace { main lexbuf }
