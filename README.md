@@ -38,7 +38,7 @@ Build tools and dependencies can be installed with opam:
 opam install ocamlbuild ocamlfind menhir core re2
 ```
 
-*TODO: version?*
+*TODO: compiler/library version?*
 
 ### Build
 ``` shell
@@ -68,14 +68,14 @@ If `-` is given for a file, it will read data from the standard input.
 | `-printer-options SEXP` | `-po`                   | specify printer options              |
 | `-list-printers`        | `-ls-p`, `-ls-printers` | print list of the available printers |
 
-*Readers* and *printers*, as their names suggest, are used to read and print data.
+*Readers* and *printers* are used to read and print data.
 See [Readers](#readers) and [Printers](#printers) for detailed information.
 
-These options can also be specified in the config file `~/.estconfig` (see also: [Config file](#config-file)).
+These options can also be specified in a config file `~/.estconfig` (see also: [Config file](#config-file)).
 Flags always overrides the same options in the config file.
 
 ### Readers
-*Readers* (not you!) are used to read data from input files.
+*Readers* are used to read data from input files.
 
 You can specify a reader by `-reader` flag.
 There are two readers available:
@@ -86,11 +86,11 @@ There are two readers available:
 Both readers are basically the same: read a table, each row (line) contains numbers separated by spaces or tabs.
 Lines start with `#` will be ignored as comments.
 
-The table in the *n*th file will be assigned to a variable named `$$n` (note that n starts from 0, so the first one is 0th), as a vector of vectors, each component represents a column of the table.
-For the first file, `$$` can be also used for the whole table and `$n` for the *n*th column (as used in the first example).
+The table content in the *n*th file will be assigned to a variable `$$n` (note that n starts from 0, so the first one is 0th), as a vector of vectors, each component represents a column of the table.
+For the first file, `$$` can be also used to access the whole table and `$n` for the *n*th column (as used in the first example).
 
-In addition, `table_ex` can read constant values in the input files.
-If a comment line starts with `##`, followed by a name and a number (e.g. `## c 3.0e+8`), the number also can be referred to by the name in the program.
+In addition, `table_ex` can read constant values from input files.
+If a comment line starts with `##`, followed by a name and a number (e.g. `## c 3.0e+8`), the number also can be referred to by the specified name in the program.
 
 Options for the reader can be specified by `-reader-options` flag, in an S-expression.
 The default options are as follows:
@@ -103,12 +103,11 @@ The default options are as follows:
 ```
 
 All fields are optional and the default values will be used if not specified.
-For example, if `-reader-options '((transpose true))'` is specified, tables will be transposed (rows and columns are interchanged), while the default separators will be used.
 
 ### Printers
 *Printers* are used to print data to the stream.
 
-You may specify a printer by `-printer` flag, but currently there is only one available printer `table`, which is used by default.
+You can specify a printer by `-printer` flag, but currently there is only one available printer `table` and it is used by default.
 
 Options for the printer can be specified by `-printer-options` flag, in an S-expression.
 The default options are as follows:
@@ -125,32 +124,33 @@ All fields are optional and the default values will be used if not specified.
 
 ### Language
 #### Syntax
-The syntax of the language is very informally expressed as follows.
+The syntax of the language can be very informally described as follows.
 
 ```
-<term> ::= <literal>
+<term> ::= <literal>                                  -- literal (number)
            <identifier>                               -- variable
            "[" <term> "," <term> "," ...  "]"         -- vector
            <term> <term>                              -- application
            "let" <identifier> "=" <term> "in" <term>  -- let-binding
 ```
 
-Terms can be (or must be, for some cases) parenthesized.
+Terms can be parenthesized freely, and must be for some cases.
 For example, a let-binding must be parenthesized when it is used in an application.
 
 *Literals* are numbers like `1`, `3.14`, `6.626e-34`.
 
 *Identifiers* must start with alphabetical letter or `$`, followed by letters, digits, `$`, `'` or `_`.
-All of `x`, `x1`, `Foo_bar'` and `$0` are valid identifiers.
+All `x`, `x1`, `Foo_bar'` and `$0` are valid identifiers.
 
-*Applications* are usual function applications, `f x` can be pronounced as "apply a function `f` to the argument `x`".
-Arguments are not needed to parenthesized as languages like C.
+*Applications* are usual function applications.
+`f x` can be pronounced as "apply a function `f` to the argument `x`".
+Arguments are not needed to be parenthesized as in languages like C.
 They are left-associative i.e. `f x y` = `(f x) y`.
 
 *Let-bindings* are used to bind a variable to the first expression in the second (body).
 For example, `let x = 1 + 2 in 3 * x` is evaluated to `9`.
 
-In addition, operators can also be used in expressions.
+In addition, prefix and infix operators can also be used in expressions.
 See [Operators](#operators) for the available operators and the precedence between them.
 
 #### Types
@@ -163,9 +163,9 @@ There are three types of values:
 A number is an IEEE 754 double precision floating point number (so it can be `nan` or `inf`).
 
 A vector value is an array of zero or more values.
-Values in a vector can have any type and can be different to each other.
+Values in a vector can be of any type respectively.
 
-In the tables below, `*` is used to describe an unknown type, which can be any one of the three types.
+In the tables below, `*` is used to describe *any* type, which depends on what is contained in a vector at runtime.
 
 #### Predefined constants
 | name      | type   | description                      |
@@ -195,7 +195,7 @@ In the tables below, `*` is used to describe an unknown type, which can be any o
 | binary | `!`  | vector → number → *      | index access; raise error if not found  | left          |
 | binary | `?`  | vector → number → *      | index access; return `nan` if not found | left          |
 
-The arithmetic operators also accept numeric vectors: `[1, 2, 3] * 4` produces `[4, 8, 12]`, `[1, 2] + [3, 4]` produces `[4, 6]`, etc.
+The arithmetic operators also accept numeric vectors as their arguments: `[1, 2, 3] * 4` produces `[4, 8, 12]` and `[1, 2] + [3, 4]` produces `[4, 6]`.
 Note that a multiplication of two vectors does not mean inner or outer product.
 
 The precedence of the operators (and application) is as follows.
@@ -203,13 +203,13 @@ The precedence of the operators (and application) is as follows.
 
 1. `!` `?`
 2. application
-4. unary `+` `-`
-3. `@`
+3. unary `+` `-`
+4. `@`
 5. `**` `^`
 6. `*` `/` `%`
 7. binary `+` `-`
 
-This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
+`1 + 2 * 3` is interpreted as `1 + (2 * 3)`, not `(1 + 2) * 3`.
 
 #### Functions
 | name    | type                       | description                                        |
@@ -263,14 +263,14 @@ This means (of course) `1 + 2 * 3` = `1 + (2 * 3)`, not `(1 + 2) * 3`.
 | `asort` | vector → vector           | sort (ascending order)                             |
 | `dsort` | vector → vector           | sort (descending order)                            |
 
-The mathematical functions which takes numbers also accept numeric vectors.
+The mathematical functions which take numbers also accept numeric vectors.
 For example, `sign [2, -3, 0]` produces `[1, -1, 0]`.
 
 ### Config file
-The config file `~/.estconfig` is convenient to specify the options that you commonly use.
-The options in the config file are written in S-expression.
+A config file `~/.estconfig` is convenient to specify the options that you usually use.
+The options in the config file are written as an S-expression.
 
-This is a template of the config file (`;` is used to comment out a line).
+This is a template of a config file (`;` is used to comment out a line).
 
 ```lisp
 (
