@@ -1,5 +1,5 @@
 # est
-*est* is a simple vector calculator, much simpler than AWK or R.
+*est* is a simple command line tool for statistical calculation.
 
 ``` console
 $ cat sample.dat
@@ -13,6 +13,43 @@ $ est '$0 + 2 * $1' sample.dat
 $ est 'sum $0' sample.dat
 12
 ```
+
+## Concept
+AWK is a great command line tool for simple calculations.
+``` console
+$ cat sample.dat
+1	2	3
+4	5	6
+7	8	9
+$ awk '{ print $1 + 2 * $2 }' sample.dat
+5
+14
+23
+```
+But when it comes to calculating, for example, sums or more complex statistics, it gets a bit *awkward*.
+Can you see what I am calculating at first glance?
+``` console
+$ awk '{ sum += $1 } END { print sum }' sample.dat
+12
+$ awk '{ sqsum += $1 ** 2; sum += $1 } END { print sqrt((sqsum - sum * sum / NR) / (NR - 1)) }' sample.dat
+3
+```
+One can write a Python or R script to use off-the-shelf functions for such calculations, but one basically needs to write some extra instructions, import libraries, read files, parse data, print, etc. for evaluating just one-line expression.
+Who wants?
+
+*est* is designed to solve these problems.
+It has basic mathematical functions (enough for me) and does not have verbose read and print instructions.
+``` console
+$ est '$0 + 2 * $1' sample.dat
+5
+14
+23
+$ est 'sum $0' sample.dat
+12
+$ est 'sd $0' sample.dat
+3
+```
+Its power is quite restricted, but sometimes it is the *easiest* way.
 
 ## How to build
 ### Requirements
