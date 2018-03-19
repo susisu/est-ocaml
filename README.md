@@ -34,11 +34,11 @@ $ awk '{ sum += $1 } END { print sum }' sample.dat
 $ awk '{ sqsum += $1 ** 2; sum += $1 } END { print sqrt((sqsum - sum * sum / NR) / (NR - 1)) }' sample.dat
 3
 ```
-One can write a Python or R script to use off-the-shelf functions for such calculations, but one basically needs to write some extra instructions, import libraries, read files, parse data, print, etc. for evaluating just one-line expression.
+One can write Python or R scripts to use off-the-shelf functions for such calculations, but one basically needs to write some extra instructions (import libraries, read files, parse data, print, etc.) for evaluating just one-line expression.
 Who wants?
 
 *est* is designed to solve these problems.
-It has basic mathematical functions (enough for me) and does not have verbose read and print instructions.
+It provides some basic mathematical functions (enough for me) and does not have verbose read and print instructions.
 ``` console
 $ est '$0 + 2 * $1' sample.dat
 5
@@ -49,7 +49,7 @@ $ est 'sum $0' sample.dat
 $ est 'sd $0' sample.dat
 3
 ```
-Its power is quite restricted, but sometimes it is the *easiest* way.
+Although its power is quite restricted, sometimes it is the *easiest* way.
 
 ## How to build
 ### Requirements
