@@ -51,43 +51,41 @@ $ est 'sd $0' sample.dat
 ```
 Although its power is quite restricted, sometimes it is the *easiest* way.
 
-## How to build
+## Installation
 ### Requirements
 * OCaml compiler
-
-For macOS:
-
-``` shell
-brew install ocaml opam
-```
-
-(Opam is a package manager of OCaml, which is recommended.)
-
-Build tools and dependencies can be installed with opam:
-
 * ocamlbuild
 * ocamlfind
 * menhir
 * core
 * re2
 
-``` shell
-opam install ocamlbuild ocamlfind menhir core re2
+#### Quick setup
+for those who use macOS and don't have OCaml installed:
+
+1. Install OCaml compiler and `opam` command via homebrew
+``` console
+$ brew install ocaml opam
+$ opam init
+```
+2. Install build tools and dependencies via `opam`
+``` console
+$ opam update
+$ opam install ocamlbuild ocamlfind menhir core re2
 ```
 
-*TODO: compiler/library version?*
-
-### Build
-``` shell
-make
+### Build and install
+``` console
+$ git clone https://github.com/susisu/est-ocaml.git
+$ cd est-ocaml
+$ make
+$ cp _build/src/main.native <wherever in PATH>/est
 ```
-
-An executable will be created at `_build/src/main.native`.
 
 ## Usage
 ### Synopsis
 ```
-est PROGRAM [FILES ...]
+$ est PROGRAM [FILES ...]
 ```
 
 For program's syntax and language features, see [Language](#language).
