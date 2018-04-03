@@ -43,6 +43,6 @@ module Make_eval(Info : Common.Showable) = struct
           )
       end
     | Term.Let (_, name, expr, body) ->
-      let ctx' = Map.add ctx ~key:name ~data:(eval ctx expr) in
+      let ctx' = Map.set ctx ~key:name ~data:(eval ctx expr) in
       eval ctx' body
 end

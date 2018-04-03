@@ -17,7 +17,7 @@ let parse_program prog =
       let pos = positions env |> fst |> Common.Position.to_string in
       let state = current_state_number env in
       let msg = try String.drop_suffix (Parser_messages.message state) 1 with
-        | Not_found -> ""
+        | _ -> ""
       in
       die_error ("parse error at " ^ pos) msg
     | _ -> die "parse error"
@@ -201,7 +201,7 @@ let spec =
   +> anon ("program" %: string)
   +> anon (sequence ("files" %: file))
 
-let command = Command.basic spec main
+let command = Command.basic_spec spec main
     ~summary:"est: Simple vector calculator"
 
 let () = Command.run command

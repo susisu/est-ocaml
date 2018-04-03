@@ -124,8 +124,8 @@ end
 module Table_ex = struct
   module Config = Table_config
 
-  let valid_name_re = Re2.Regex.create_exn "^[A-Za-z\\$][A-Za-z0-9\\$_']*$"
-  let valid_name name = Re2.Regex.matches valid_name_re name
+  let valid_name_re = Re2.create_exn "^[A-Za-z\\$][A-Za-z0-9\\$_']*$"
+  let valid_name name = Re2.matches valid_name_re name
 
   let read_const consts strict default str =
     match split_words [' '; '\t'] str with
@@ -159,7 +159,7 @@ module Table_ex = struct
       Config.transpose = trans;
     } = config in
     let transpose = if trans then Fn.id else Array.transpose_exn in
-    let consts = Hashtbl.create ~hashable:String.hashable () in
+    let consts = Hashtbl.create (module String) in
     let table = In_channel.input_lines ch
                 |> List.filter ~f:(fun line -> line <> "")
                 |> read_and_remove_comments consts strict default
