@@ -1,0 +1,19 @@
+opam-version: "1.2"
+name: "est"
+version: "0.1.0"
+maintainer: "Susisu <susisu2413@yahoo.co.jp>"
+author: "Susisu <susisu2413@yahoo.co.jp>"
+homepage: "https://github.com/susisu/est-ocaml"
+bug-reports: "https://github.com/susisu/est-ocaml/issues"
+license: "MIT"
+dev-repo: "git://github.com/susisu/est-ocaml.git"
+build: [make]
+install: [make "install" "PREFIX=%{prefix}%"]
+remove: [make "uninstall" "PREFIX=%{prefix}%"]
+depends: [
+  "ocamlfind"
+  "ocamlbuild"
+  "core" {>= "v0.11" & < "v0.12"}
+  "menhir" {>= "20171222"}
+  "re2" {>= "v0.11" & < "v0.12"}
+]
