@@ -53,34 +53,39 @@ Although its power is quite restricted, sometimes it is the *easiest* way.
 
 ## Installation
 ### Requirements
-* OCaml compiler
-* ocamlbuild
-* ocamlfind
-* menhir
-* core
-* re2
+* OCaml
+* OPAM (recommended)
 
-#### Quick setup
-for those who use macOS and don't have OCaml installed:
+To setup on macOS with Homebrew, execute the following commands and follow the instructions:
 
-1. Install OCaml compiler and `opam` command via homebrew
 ``` console
+$ brew update
 $ brew install ocaml opam
 $ opam init
 ```
-2. Install build tools and dependencies via `opam`
+
+### With OPAM
 ``` console
-$ opam update
-$ opam install ocamlbuild ocamlfind menhir core re2
+$ opam pin add est git://github.com/susisu/est-ocaml.git
 ```
 
-### Build and install
+### Without OPAM
 ``` console
 $ git clone https://github.com/susisu/est-ocaml.git
 $ cd est-ocaml
 $ make
-$ cp _build/src/main.native <wherever in PATH>/est
+$ make install
 ```
+
+Then the binary is installed to `/usr/local/bin/est`.
+
+If you would like to install the binary to, say, `wherever/bin/est`, execute the following command instead.
+
+``` console
+$ make install PREFIX=wherever
+```
+
+You can also manually copy `est` binary to wherever you want.
 
 ## Usage
 ### Synopsis
